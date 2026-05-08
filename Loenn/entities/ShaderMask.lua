@@ -1,6 +1,7 @@
 local shaderMask = {}
 
 shaderMask.name = "YaoiHelper/ShaderMask"
+shaderMask.depth = -100000
 shaderMask.placements = {
 	name = "main",
 	data = {
@@ -10,5 +11,7 @@ shaderMask.placements = {
 		mask_image = "",
 	}
 }
+
+shaderMask.color = {1, 0, 1, 0.2}
 
 return shaderMask

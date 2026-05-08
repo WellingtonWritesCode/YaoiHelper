@@ -9,4 +9,6 @@ buildRegion.placements = {
 	}
 }
 
+buildRegion.color = {0, 1, 1, 0.2}
+
 return buildRegion;
