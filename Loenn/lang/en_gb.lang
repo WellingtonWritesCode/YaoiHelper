@@ -3,6 +3,7 @@ triggers.YaoiHelper/HDShaderTrigger.placements.name.main=HD Shader
 triggers.YaoiHelper/MouselineTrigger.placements.name.main=Mouse Control
 triggers.YaoiHelper/WindowFollowPlayerTrigger.placements.name.main=Window Dance
 triggers.YaoiHelper/DisableGlitchTrigger.placements.name.main=Disable Glitch Effects
+triggers.YaoiHelper/GlobalTimerTrigger.placements.name.main=Global Timer
 
 entities.YaoiHelper/HDShaderController.placements.name.main=HD Shader Controller
 entities.YaoiHelper/BuildController.placements.name.main=Build Controller

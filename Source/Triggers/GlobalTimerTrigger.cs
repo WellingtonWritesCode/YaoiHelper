@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -7,44 +8,49 @@ namespace Celeste.Mod.YaoiHelper.Triggers;
 // a bunch of this is lifted from frosthelper
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(GlobalTimer)}")]
 [Tracked]
-public sealed class GlobalTimer : Trigger {
-	private readonly string flag;
-	private readonly float time;
-	internal float current;
-	internal bool started;
+public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data, offset) {
+	private readonly string flag = data.Attr("flag");
+	private readonly float time = data.Float("time");
 
-	public GlobalTimer(EntityData data, Vector2 offset) : base(data, offset) {
-		flag = data.Attr("flag");
-		current = time = data.Float("time");
-	}
-
-	public override void Added(Scene scene) {
-		base.Added(scene);
-
-		if (scene is Level level) {
-			level.Session.SetFlag(flag, false);
-		}
+	public override void Awake(Scene scene) {
+		base.Awake(scene);
+		GlobalTimerHandler.countdowns = [];
 	}
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
+		GlobalTimerHandler.countdowns.Add(new GlobalFlagCountdown(flag, time));
+		player.level.Session.SetFlag(flag, false);
 
-		started = true;
 	}
+}
 
-	public override void Update() {
-		base.Update();
+public static class GlobalTimerHandler {
+	public static List<GlobalFlagCountdown> countdowns = new List<GlobalFlagCountdown>();
 
-		if (!started) return;
-		current -= Engine.RawDeltaTime;
-		if (current <= 0) {
-			SceneAs<Level>().Session.SetFlag(flag, true);
-			RemoveSelf();
+	public static void OnLevelUpdate_TickCountdowns(On.Celeste.Level.orig_Update orig, Level self) {
+		foreach (GlobalFlagCountdown countdown in countdowns) {
+			countdown.Current -= Engine.RawDeltaTime;
+			if (countdown.Current <= 0) {
+				self.Session.SetFlag(countdown.Flag, true);
+			}
 		}
+
+		countdowns.RemoveAll(x => x.Current <= 0);
+
+		orig(self);
 	}
 
-	public void Reset() {
-		started = false;
-		current = time;
+	public static void ApplyHooks() {
+		On.Celeste.Level.Update += OnLevelUpdate_TickCountdowns;
 	}
+
+	public static void RemoveHooks() {
+		On.Celeste.Level.Update -= OnLevelUpdate_TickCountdowns;
+
+	}
+}
+
+public record GlobalFlagCountdown(string Flag, float Time) { 
+	public float Current = Time;
 }
