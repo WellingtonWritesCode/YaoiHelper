@@ -29,7 +29,6 @@ public sealed class HDShaderTrigger : Trigger {
 	}
 
 	public HDShaderTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-		Console.WriteLine(data.String("effects"));
 		string[] MaskGroups = data.Attr("mask_groups").Split(',').Select(x => x.Trim()).ToArray();
 		Shaders = data.Attr("effects").Split(',').Select(x => new Shader(new Effect(Engine.Graphics.GraphicsDevice, Everest.Content.Get($"Effects/{x.Trim()}.cso", true).Data), MaskGroups)).ToList();
 		flag_name = data.Attr("flag");

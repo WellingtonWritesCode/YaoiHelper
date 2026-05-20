@@ -3,9 +3,7 @@ using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.YaoiHelper.Triggers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using MonoMod.Cil;
 
 namespace Celeste.Mod.YaoiHelper.Entities;
 

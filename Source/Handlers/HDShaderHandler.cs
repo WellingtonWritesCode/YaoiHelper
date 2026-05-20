@@ -101,17 +101,15 @@ public static class HDShaderHandler {
 
 	private static void renderWithShaders(Level level) {
 		HDShaderController controller = level.Tracker.GetEntity<HDShaderController>();
-		List<Shader> shaders = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.Activated(level)).SelectMany(x => x.Shaders).ToList();
+		List<Shader> shaders = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.Activated(level) && x.SourceData.Level.Name == controller.SourceData.Level.Name).SelectMany(x => x.Shaders).ToList();
 		bool applyShaders = shaders.Count > 0 && level.Tracker.CountEntities<HDShaderController>() > 0;
 		
-		// i have no clue what these constants do 
 		Vector2 vector = new Vector2(320f, 180f);
 		Vector2 vector2 = vector / level.ZoomTarget;
 		Vector2 vector3 = level.ZoomTarget != 1f ? (level.ZoomFocusPoint - vector2 / 2f) / (vector - vector2) * vector : Vector2.Zero;
 		float scale = level.Zoom * ((vector.X -  level.ScreenPadding * 2f) / 320f);
 		Vector2 vector4 = new Vector2(level.ScreenPadding, level.ScreenPadding * /* 9f/16f, which is */ 0.5625f);
 
-		// draw level
 		Engine.Graphics.GraphicsDevice.SetRenderTarget(applyShaders ? (RenderTarget2D)flipflop_targets[0] : null);
 		Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
@@ -126,7 +124,6 @@ public static class HDShaderHandler {
 
 		if (!applyShaders) return;
 		
-		// draw masks
 		List<IShaderMask> shaderMasks = level.Tracker.GetEntities<ShaderMask>().Cast<IShaderMask>().ToList();
 		List<string> maskGroups = shaderMasks.SelectMany(x => x.MaskGroups).ToList();
 
@@ -143,7 +140,6 @@ public static class HDShaderHandler {
 			Draw.SpriteBatch.End();
 		}
 
-		// apply shaders
 		RenderTarget2D source, target;
 
 		for (int i = 0; i < shaders.Count; i++) {

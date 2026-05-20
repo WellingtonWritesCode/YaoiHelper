@@ -20,7 +20,7 @@ float4 SpritePixelShader(float2 uv : TEXCOORD0) : COLOR0
 	// this is insanely inefficient but i don't really know what i can do about it 
 	for (int i = -50; i < 50; i++) {
 		float4 sampled = SAMPLE_TEXTURE(text, uv + float2(i + i * cos(Time) * 0.4, i + i * sin(Time) * 0.4) / Dimensions);
-		color += (sampled * sampled * sampled * sampled) / (50 + abs(i) * 2);
+		color += (sampled * sampled * sampled * sampled) / (25 + abs(i) * 2);
 	}
 
 	return color;
