@@ -12,6 +12,7 @@ namespace Celeste.Mod.YaoiHelper.Triggers;
 public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data, offset) {
 	private readonly string flag = data.Attr("flag");
 	private readonly float time = data.Float("time");
+	private readonly bool ignoreFreezeFrames = data.Bool("ignore_freeze_frames");
 
 	public override void Awake(Scene scene) {
 		base.Awake(scene);
@@ -20,7 +21,7 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
-		GlobalTimerHandler.countdowns.Add(new GlobalFlagCountdown(flag, time));
+		GlobalTimerHandler.countdowns.Add(new GlobalFlagCountdown(flag, time, ignoreFreezeFrames));
 		player.level.Session.SetFlag(flag, false);
 
 	}
@@ -36,7 +37,7 @@ public static class GlobalTimerHandler {
 
 	public static void OnEngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
 		foreach (GlobalFlagCountdown countdown in countdowns) {
-			countdown.Current -= Engine.RawDeltaTime;
+			countdown.Current -= countdown.ignoreFreezeFrames ? Engine.RawDeltaTime : Engine.DeltaTime;
 			if (countdown.Current <= 0) {
 				countdown.Expired = true;
 			}
@@ -63,7 +64,7 @@ public static class GlobalTimerHandler {
 	}
 }
 
-public record GlobalFlagCountdown(string Flag, float Time) { 
+public record GlobalFlagCountdown(string Flag, float Time, bool ignoreFreezeFrames) { 
 	public float Current = Time;
 	public bool Expired = false;
 }

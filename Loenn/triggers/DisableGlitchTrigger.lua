@@ -1,7 +1,7 @@
 
 local disableGlitchTrigger = {}
 
-disableGlitchTrigger.name = "YaoiHelper/DisableGlitchTrigger"
+disableGlitchTrigger.name = "YaoiHelper/DisableGlitch"
 disableGlitchTrigger.placements = {
 	name = "main",
 	data = {

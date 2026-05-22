@@ -6,13 +6,13 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity("YaoiHelper/WindowFollowPlayerTrigger")]
-public sealed unsafe class WindowFollowPlayerTrigger : Trigger {
+[CustomEntity("YaoiHelper/WindowDance")]
+public sealed class WindowDanceTrigger : Trigger {
 	public static Vector2 bounds;
 	public static float zoom;
 	private Vector2 windowSize => bounds / zoom;
 
-	public WindowFollowPlayerTrigger(EntityData data, Vector2 offset) : base(data, offset) {
+	public WindowDanceTrigger(EntityData data, Vector2 offset) : base(data, offset) {
 		zoom = data.Float("zoom_level", 6f);
 	}
 

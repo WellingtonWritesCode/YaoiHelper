@@ -1,6 +1,6 @@
 local HDShaderTrigger = {}
 
-HDShaderTrigger.name = "YaoiHelper/HDShaderTrigger"
+HDShaderTrigger.name = "YaoiHelper/HDShader"
 HDShaderTrigger.placements = {
 	name = "main",
 	data = {

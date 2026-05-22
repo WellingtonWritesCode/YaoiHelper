@@ -1,12 +1,12 @@
 
-local windowFollowPlayerTrigger = {}
+local windowDanceTrigger = {}
 
-windowFollowPlayerTrigger.name = "YaoiHelper/WindowFollowPlayerTrigger"
-windowFollowPlayerTrigger.placements = {
+windowDanceTrigger.name = "YaoiHelper/WindowDance"
+windowDanceTrigger.placements = {
 	name = "main",
 	data = {
 		zoom_level = 6;
 	}
 }
 
-return windowFollowPlayerTrigger
+return windowDanceTrigger

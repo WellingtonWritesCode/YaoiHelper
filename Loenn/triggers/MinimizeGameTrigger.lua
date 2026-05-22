@@ -1,6 +1,6 @@
 local minimizeGameTrigger = {}
 
-minimizeGameTrigger.name = "YaoiHelper/MinimizeGameTrigger"
+minimizeGameTrigger.name = "YaoiHelper/MinimizeGame"
 minimizeGameTrigger.placements = {
 	name = "main"
 }

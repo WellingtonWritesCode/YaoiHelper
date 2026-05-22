@@ -1,6 +1,6 @@
 local mouselineTrigger = {}
 
-mouselineTrigger.name = "YaoiHelper/MouselineTrigger"
+mouselineTrigger.name = "YaoiHelper/MouseMovement"
 mouselineTrigger.placements = {
 	name = "main",
 	data = {

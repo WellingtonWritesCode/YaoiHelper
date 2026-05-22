@@ -6,6 +6,7 @@ globalTimer.placements = {
 	data = {
 		flag = "",
 		time = 1,
+		ignore_freeze_frames = true
 	}
 }
 

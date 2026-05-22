@@ -82,11 +82,10 @@ public static class HDShaderHandler {
 		eff.Parameters["Time"]?.SetValue(level.TimeActive);
 		eff.Parameters["CamPos"]?.SetValue(level.Camera.Position);
 		eff.Parameters["PlayerPos"]?.SetValue(level.Tracker.CountEntities<Player>() == 1 ? level.Tracker.GetEntity<Player>().Position : new Vector2(-1, -1));
-		eff.Parameters["Dimensions"]?.SetValue(new Vector2(1920, 1080));
+		eff.Parameters["Dimensions"]?.SetValue(target == null ? new Vector2(Engine.Viewport.Width, Engine.Viewport.Height) : new Vector2(target.Width, target.Height));
 
 		// Go my jank
-		// XXX: 1920x1080 works on my other computer, Engine.Viewport works on this computer
-		eff.Parameters["ViewMatrix"]?.SetValue(target == null ? Matrix.CreateOrthographicOffCenter(0, Engine.Viewport.Width, Engine.Viewport.Height, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
+		eff.Parameters["ViewMatrix"]?.SetValue(target == null ? Matrix.CreateOrthographicOffCenter(0, 1920, 1080, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
 		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.Identity);
 
 		// TODO TODO TODO TODO TODO AUGHHAHGHAHHGHHAHGHAH
@@ -119,7 +118,7 @@ public static class HDShaderHandler {
 			Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 		}
 
-		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f) * Engine.ScreenMatrix);
+		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f) * (applyShaders ? Matrix.Identity : Engine.ScreenMatrix));
 		Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.Level, vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
 		Draw.SpriteBatch.End();
 
@@ -132,7 +131,7 @@ public static class HDShaderHandler {
 			Engine.Graphics.GraphicsDevice.SetRenderTarget(controller.GetMaskGroupTarget(group));
 			Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f) * Engine.ScreenMatrix);
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f));
 
 			foreach (IShaderMask sm in shaderMasks.Where(x => x.MaskGroups.Contains(group))) {
 				sm.RenderMask();
@@ -158,7 +157,7 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 			}
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, passShaderParams(shaders[i], level, target), Engine.ScreenMatrix);
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}
