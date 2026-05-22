@@ -101,6 +101,7 @@ public static class HDShaderHandler {
 
 	private static void renderWithShaders(Level level) {
 		HDShaderController controller = level.Tracker.GetEntity<HDShaderController>();
+		// TODO this is really really jank
 		List<Shader> shaders = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.Activated(level) && x.SourceData.Level.Name == controller.SourceData.Level.Name).SelectMany(x => x.Shaders).ToList();
 		bool applyShaders = shaders.Count > 0 && level.Tracker.CountEntities<HDShaderController>() > 0;
 		

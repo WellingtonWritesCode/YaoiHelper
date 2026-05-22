@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -23,34 +24,46 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 		player.level.Session.SetFlag(flag, false);
 
 	}
+
+	public override void DebugRender(Camera camera) {
+		base.DebugRender(camera);
+		ActiveFont.Draw(string.Join('\n', GlobalTimerHandler.countdowns.Select(x => string.Concat(x.Flag, " : ", x.Current))), camera.Position, Color.Red);
+	}
 }
 
 public static class GlobalTimerHandler {
 	public static List<GlobalFlagCountdown> countdowns = new List<GlobalFlagCountdown>();
 
-	public static void OnLevelUpdate_TickCountdowns(On.Celeste.Level.orig_Update orig, Level self) {
+	public static void OnEngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
 		foreach (GlobalFlagCountdown countdown in countdowns) {
 			countdown.Current -= Engine.RawDeltaTime;
 			if (countdown.Current <= 0) {
-				self.Session.SetFlag(countdown.Flag, true);
+				countdown.Expired = true;
 			}
 		}
 
-		countdowns.RemoveAll(x => x.Current <= 0);
+		if (self.scene is Level level) {
+			foreach (GlobalFlagCountdown countdown in countdowns.Where(x => x.Expired)) {
+				level.Session.SetFlag(countdown.Flag, true);
+			}
+		}
 
-		orig(self);
+		countdowns.RemoveAll(x => x.Expired);
+
+		orig(self, gameTime);
 	}
 
 	public static void ApplyHooks() {
-		On.Celeste.Level.Update += OnLevelUpdate_TickCountdowns;
+		On.Monocle.Engine.Update += OnEngineUpdate_TickCountdowns;
 	}
 
 	public static void RemoveHooks() {
-		On.Celeste.Level.Update -= OnLevelUpdate_TickCountdowns;
+		On.Monocle.Engine.Update -= OnEngineUpdate_TickCountdowns;
 
 	}
 }
 
 public record GlobalFlagCountdown(string Flag, float Time) { 
 	public float Current = Time;
+	public bool Expired = false;
 }
