@@ -36,7 +36,7 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 public static class GlobalTimerHandler {
 	public static List<GlobalFlagCountdown> countdowns = new List<GlobalFlagCountdown>();
 
-	public static void OnEngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
+	public static void On_EngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
 		foreach (GlobalFlagCountdown countdown in countdowns) {
 			// ternary operator cow: eat my tergers
 			countdown.Current -= (countdown.ignoreFreezeFrames ? Engine.RawDeltaTime : Engine.DeltaTime) * (!self.scene.Paused || countdown.runWhenPaused ? 1 : 0);
@@ -58,11 +58,11 @@ public static class GlobalTimerHandler {
 	}
 
 	public static void ApplyHooks() {
-		On.Monocle.Engine.Update += OnEngineUpdate_TickCountdowns;
+		On.Monocle.Engine.Update += On_EngineUpdate_TickCountdowns;
 	}
 
 	public static void RemoveHooks() {
-		On.Monocle.Engine.Update -= OnEngineUpdate_TickCountdowns;
+		On.Monocle.Engine.Update -= On_EngineUpdate_TickCountdowns;
 
 	}
 }

@@ -9,6 +9,7 @@ using Monocle;
 namespace Celeste.Mod.YaoiHelper.Entities;
 
 [CustomEntity("YaoiHelper/BuildController")]
+[Tracked(false)]
 public sealed class BuildController : Entity {
 	private Vector2 mouse_pos;
 	private bool building;
@@ -89,17 +90,17 @@ public sealed class BuildController : Entity {
 		});
 	}
 
-	public static void OnLoadLevel_BuildAnywhere(Level level, Player.IntroTypes introType, bool fromloader) {
+	public static void On_LoadLevel_BuildAnywhere(Level level, Player.IntroTypes introType, bool fromloader) {
 		if (YaoiHelperModule.Settings.BuildAnywhere && level.Tracker.CountEntities<BuildController>() == 0) {
 			level.Add(new BuildController(new EntityData(), new Vector2(0, 0)));
 		}
 	}
 
 	public static void ApplyHooks() {
-		Everest.Events.Level.OnLoadLevel += OnLoadLevel_BuildAnywhere;
+		Everest.Events.Level.OnLoadLevel += On_LoadLevel_BuildAnywhere;
 	}
 
 	public static void RemoveHooks() {
-		Everest.Events.Level.OnLoadLevel -= OnLoadLevel_BuildAnywhere;
+		Everest.Events.Level.OnLoadLevel -= On_LoadLevel_BuildAnywhere;
 	}
 }
