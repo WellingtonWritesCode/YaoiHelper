@@ -2,6 +2,7 @@
 local buildController = {}
 
 buildController.name = "YaoiHelper/BuildController"
+buildController.texture = "LoennSprites/Entities/build_controller"
 buildController.depth = -10000
 buildController.justification = {0.5, 0.5}
 buildController.placements = {

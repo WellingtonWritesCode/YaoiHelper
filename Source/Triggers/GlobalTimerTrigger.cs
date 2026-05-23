@@ -29,7 +29,7 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 
 	public override void DebugRender(Camera camera) {
 		base.DebugRender(camera);
-		ActiveFont.Draw(string.Join('\n', GlobalTimerHandler.countdowns.Select(x => string.Concat(x.Flag, " : ", x.Current))), camera.Position, Color.Red);
+		ActiveFont.Draw(string.Join('\n', GlobalTimerHandler.countdowns.Select(x => string.Concat(x.Flag, " : ", x.Current))), camera.Position, Vector2.Zero, Vector2.One / 3, Color.Red);
 	}
 }
 
