@@ -13,6 +13,7 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 	private readonly string flag = data.Attr("flag");
 	private readonly float time = data.Float("time");
 	private readonly bool ignoreFreezeFrames = data.Bool("ignore_freeze_frames");
+	private readonly bool runWhenPaused = data.Bool("run_when_paused");
 
 	public override void Awake(Scene scene) {
 		base.Awake(scene);
@@ -21,7 +22,7 @@ public sealed class GlobalTimer(EntityData data, Vector2 offset) : Trigger(data,
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
-		GlobalTimerHandler.countdowns.Add(new GlobalFlagCountdown(flag, time, ignoreFreezeFrames));
+		GlobalTimerHandler.countdowns.Add(new GlobalFlagCountdown(flag, time, ignoreFreezeFrames, runWhenPaused));
 		player.level.Session.SetFlag(flag, false);
 
 	}
@@ -37,9 +38,10 @@ public static class GlobalTimerHandler {
 
 	public static void OnEngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
 		foreach (GlobalFlagCountdown countdown in countdowns) {
-			countdown.Current -= countdown.ignoreFreezeFrames ? Engine.RawDeltaTime : Engine.DeltaTime;
+			// ternary operator cow: eat my tergers
+			countdown.Current -= (countdown.ignoreFreezeFrames ? Engine.RawDeltaTime : Engine.DeltaTime) * (!self.scene.Paused || countdown.runWhenPaused ? 1 : 0);
 			if (countdown.Current <= 0) {
-				countdown.Expired = true;
+				countdown.Expired = !self.scene.Paused || countdown.runWhenPaused;
 			}
 		}
 
@@ -47,9 +49,10 @@ public static class GlobalTimerHandler {
 			foreach (GlobalFlagCountdown countdown in countdowns.Where(x => x.Expired)) {
 				level.Session.SetFlag(countdown.Flag, true);
 			}
+
+			countdowns.RemoveAll(x => x.Expired && (!self.scene.Paused || x.runWhenPaused));
 		}
 
-		countdowns.RemoveAll(x => x.Expired);
 
 		orig(self, gameTime);
 	}
@@ -64,7 +67,7 @@ public static class GlobalTimerHandler {
 	}
 }
 
-public record GlobalFlagCountdown(string Flag, float Time, bool ignoreFreezeFrames) { 
+public record GlobalFlagCountdown(string Flag, float Time, bool ignoreFreezeFrames, bool runWhenPaused) { 
 	public float Current = Time;
 	public bool Expired = false;
 }

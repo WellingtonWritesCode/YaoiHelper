@@ -1,7 +1,7 @@
 triggers.YaoiHelper/MinimizeGame.placements.name.main=Minimize Game
 triggers.YaoiHelper/HDShader.placements.name.main=HD Shader
 triggers.YaoiHelper/MouseMovement.placements.name.main=Mouse Control
-triggers.YaoiHelper/WindowFollowPlayer.placements.name.main=Window Dance
+triggers.YaoiHelper/WindowDance.placements.name.main=Window Dance
 triggers.YaoiHelper/DisableGlitch.placements.name.main=Disable Glitch Effects
 triggers.YaoiHelper/GlobalTimer.placements.name.main=Global Timer
 

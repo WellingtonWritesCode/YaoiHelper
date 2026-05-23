@@ -142,10 +142,11 @@ public static class HDShaderHandler {
 
 		RenderTarget2D source, target;
 
-		for (int i = 0; i < shaders.Count; i++) {
+		// TODO: this wastes a draw call
+		for (int i = 0; i <= shaders.Count; i++) {
 			source = flipflop_targets[i % 2];
 			target = i switch {
-				_ when i == (shaders.Count - 1) => null,
+				_ when i == shaders.Count => null,
 				_ => (RenderTarget2D)flipflop_targets[1 - (i % 2)],
 			};
 
@@ -157,7 +158,7 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 			}
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, target == null ? null : passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}

@@ -1,4 +1,3 @@
-
 local windowDanceTrigger = {}
 
 windowDanceTrigger.name = "YaoiHelper/WindowDance"

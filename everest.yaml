@@ -1,5 +1,5 @@
 - Name: YaoiHelper
-  Version: 0.3.0
+  Version: 0.3.1
   DLL: bin/YaoiHelper.dll
   Dependencies:
     - Name: EverestCore
