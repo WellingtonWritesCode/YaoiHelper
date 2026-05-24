@@ -5,14 +5,14 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity("YaoiHelper/MouselineTrigger")]
-public class MouselineTrigger : Trigger {
+[CustomEntity("YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger")]
+public class MouseMovement : Trigger {
 	private Vector2 mousePos;
 
 	public bool Fling;
 	public bool AllowDashing;
 
-	public MouselineTrigger(EntityData data, Vector2 offset) : base(data, offset) {
+	public MouseMovement(EntityData data, Vector2 offset) : base(data, offset) {
 		Visible = true;
 		Fling = data.Bool("fling");
 		AllowDashing = data.Bool("allow_dashing");

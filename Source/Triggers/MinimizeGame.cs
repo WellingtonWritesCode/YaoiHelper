@@ -7,9 +7,9 @@ using Monocle;
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
 [CustomEntity("YaoiHelper/MinimizeGameTrigger")]
-public sealed class MinimizeGameTrigger(EntityData data, Vector2 offset) : Trigger(data, offset) {
-	[DllImport("SDL2", CharSet = CharSet.Unicode)]
-	private static extern void SDL_MinimizeWindow(IntPtr window);
+public sealed partial class MinimizeGame(EntityData data, Vector2 offset) : Trigger(data, offset) {
+	[LibraryImport("SDL2")]
+	private static partial void SDL_MinimizeWindow(IntPtr window);
 
     public override void OnEnter(Player player) {
         base.OnEnter(player);

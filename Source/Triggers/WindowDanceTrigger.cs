@@ -7,7 +7,7 @@ using Monocle;
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
 [CustomEntity("YaoiHelper/WindowDance")]
-public sealed class WindowDanceTrigger : Trigger {
+public sealed partial class WindowDanceTrigger : Trigger {
 	public static Vector2 bounds;
 	public static float zoom;
 	private Vector2 windowSize => bounds / zoom;
@@ -16,9 +16,8 @@ public sealed class WindowDanceTrigger : Trigger {
 		zoom = data.Float("zoom_level", 6f);
 	}
 
-	[DllImport("SDL2", CharSet = CharSet.Unicode)]
-	public static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
-
+	[LibraryImport("SDL2")]
+	private static partial void SDL_SetWindowPosition(IntPtr window, int x, int y);
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);

@@ -8,11 +8,11 @@ namespace Celeste.Mod.YaoiHelper.Triggers;
 
 [CustomEntity("YaoiHelper/DisableGlitchTrigger")]
 [Tracked]
-public sealed class DisableGlitchTrigger : Trigger {
+public sealed class DisableGlitchEffects : Trigger {
 	public bool AlwaysActive;
 	public bool Activated;
 
-	public DisableGlitchTrigger(EntityData data, Vector2 offset) : base(data, offset) {
+	public DisableGlitchEffects(EntityData data, Vector2 offset) : base(data, offset) {
 		AlwaysActive = data.Bool("always_active");
 		Activated = AlwaysActive;
 	}
@@ -28,14 +28,14 @@ public sealed class DisableGlitchTrigger : Trigger {
     }
 
 	public static void On_GlitchApply_DisableIfTrigger(On.Celeste.Glitch.orig_Apply orig, VirtualRenderTarget target, float timer, float seed, float amplitude) {
-		if (!Engine.Scene.Tracker.GetEntities<DisableGlitchTrigger>().Cast<DisableGlitchTrigger>().Any(x => x.Activated)) {
+		if (!Engine.Scene.Tracker.GetEntities<DisableGlitchEffects>().Cast<DisableGlitchEffects>().Any(x => x.Activated)) {
 			orig(target, timer, seed, amplitude);
 		}
 	}
 
 	public static void ApplyHooks() {
 		// hook as late as possible as to not intervene with other people's stuff 
-		DetourConfig config = new DetourConfig($"{nameof(YaoiHelperModule)}/{nameof(DisableGlitchTrigger)}", priority: null);
+		DetourConfig config = new DetourConfig($"{nameof(YaoiHelperModule)}/{nameof(DisableGlitchEffects)}", priority: null);
 		DetourConfigContext context = new DetourConfigContext(config);
 
 		using (context.Use()) {

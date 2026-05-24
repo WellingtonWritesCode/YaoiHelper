@@ -33,7 +33,7 @@ public class YaoiHelperModule : EverestModule {
 
     public override void Load() {
 		HDShaderHandler.ApplyHooks();
-		DisableGlitchTrigger.ApplyHooks();
+		DisableGlitchEffects.ApplyHooks();
 		GlobalTimerHandler.ApplyHooks();
 		BuildController.ApplyHooks();
 		// TODO add a toggle for this
@@ -50,7 +50,7 @@ public class YaoiHelperModule : EverestModule {
 
     public override void Unload() {
 		HDShaderHandler.RemoveHooks();
-		DisableGlitchTrigger.RemoveHooks();
+		DisableGlitchEffects.RemoveHooks();
 		GlobalTimerHandler.RemoveHooks();
 		BuildController.RemoveHooks();
     }
