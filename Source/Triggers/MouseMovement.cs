@@ -5,7 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity("YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger")]
+[CustomEntity(["YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger"])]
 public class MouseMovement : Trigger {
 	private Vector2 mousePos;
 

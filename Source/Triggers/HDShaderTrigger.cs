@@ -9,7 +9,7 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity("YaoiHelper/HDShaderTrigger")]
+[CustomEntity(["YaoiHelper/HDShader", "YaoiHelper/HDShaderTrigger"])]
 [Tracked]
 public sealed class HDShaderTrigger : Trigger {
 	public List<Shader> Shaders;
