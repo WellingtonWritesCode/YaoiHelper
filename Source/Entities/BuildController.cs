@@ -91,7 +91,7 @@ public sealed class BuildController : Entity {
 	}
 
 	public static void On_LoadLevel_BuildAnywhere(Level level, Player.IntroTypes introType, bool fromloader) {
-		if (YaoiHelperModule.Settings.BuildAnywhere && level.Tracker.CountEntities<BuildController>() == 0) {
+		if (YaoiHelperModule.Settings.BuildAnywhere) {
 			level.Add(new BuildController(new EntityData(), new Vector2(0, 0)));
 		}
 	}
