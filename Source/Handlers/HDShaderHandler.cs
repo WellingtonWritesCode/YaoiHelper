@@ -99,6 +99,7 @@ public static class HDShaderHandler {
 	}
 
 	private static void renderWithShaders(Level level) {
+		RenderTarget2D origTarget = (RenderTarget2D)Engine.Graphics.GraphicsDevice.GetRenderTargets().ElementAtOrDefault(0).RenderTarget;
 		HDShaderController controller = level.Tracker.GetEntity<HDShaderController>();
 		// TODO this is really really jank
 		List<Shader> shaders = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.Activated(level) && x.SourceData.Level.Name == controller.SourceData.Level.Name).SelectMany(x => x.Shaders).ToList();
@@ -110,11 +111,11 @@ public static class HDShaderHandler {
 		float scale = level.Zoom * ((vector.X -  level.ScreenPadding * 2f) / 320f);
 		Vector2 vector4 = new Vector2(level.ScreenPadding, level.ScreenPadding * /* 9f/16f, which is */ 0.5625f);
 
-		Engine.Graphics.GraphicsDevice.SetRenderTarget(applyShaders ? (RenderTarget2D)flipflop_targets[0] : null);
+		Engine.Graphics.GraphicsDevice.SetRenderTarget(applyShaders ? (RenderTarget2D)flipflop_targets[0] : origTarget);
 		Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
 		// for proper letterboxing
-		if (!applyShaders) {
+		if (!applyShaders && origTarget == null) {
 			Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 		}
 
@@ -146,7 +147,7 @@ public static class HDShaderHandler {
 		for (int i = 0; i <= shaders.Count; i++) {
 			source = flipflop_targets[i % 2];
 			target = i switch {
-				_ when i == shaders.Count => null,
+				_ when i == shaders.Count => origTarget,
 				_ => (RenderTarget2D)flipflop_targets[1 - (i % 2)],
 			};
 
@@ -158,7 +159,7 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 			}
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, target == null ? null : passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, target == origTarget ? null : passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}
