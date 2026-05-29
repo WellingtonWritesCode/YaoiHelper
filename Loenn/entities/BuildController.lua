@@ -7,6 +7,10 @@ buildController.depth = -10000
 buildController.justification = {0.5, 0.5}
 buildController.placements = {
     name = "main",
+	data = {
+		unlimited = false;
+		tile_limit = 10,
+	}
 }
 
 return buildController

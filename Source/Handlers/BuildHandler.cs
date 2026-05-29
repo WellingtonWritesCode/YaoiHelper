@@ -10,18 +10,30 @@ using MonoMod.Cil;
 namespace Celeste.Mod.YaoiHelper.Entities;
 
 public static class BuildHandler {
-	private static Vector2 mouse_pos;
-	private static bool building;
-	private static bool mining;
-	private static bool valid_position;
+	public static Vector2 mouse_pos;
+	public static bool building;
+	public static bool mining;
+	public static bool valid_position;
 
 	private static readonly char selectedTile = '3';
+	
+	private static int tileLimit, tilesLeft = -1;
+	private static bool unlimited = true;
+
+	public static int TileLimit { get => tileLimit; set => tileLimit = tilesLeft = value; }
+	public static int TilesLeft { get => tilesLeft; private set => tilesLeft = value; }
+	public static bool Unlimited { get => unlimited || YaoiHelperModule.Settings.BuildAnywhere; set => unlimited = value; }
 
 	public static void On_LevelUpdate_Build(On.Celeste.Level.orig_Update orig, Level level) {
-		if (level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere)) {
-			orig(level);
-			return;
+		orig(level);
+
+		if (level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere)) return; 
+
+		if (YaoiHelperModule.Settings.BuildAnywhere) {
+			unlimited = true;
 		}
+
+		BuildController controller = level.Tracker.GetEntity<BuildController>();
 
 		MouseState state = MInput.Mouse.CurrentState;
 		mouse_pos = level.ScreenToWorld(new Vector2(MInput.Mouse.X - Engine.Viewport.X, MInput.Mouse.Y - Engine.Viewport.Y)) - level.LevelOffset;
@@ -40,27 +52,29 @@ public static class BuildHandler {
 			}
 		}
 
-		if (!(building || mining) || !valid_position) {
-			orig(level);
-			return;
-		};
-
+		if (!(building || mining) || !valid_position) return;
 
 		if (building) {
-			if (level.SolidsData[tile.X, tile.Y] == '0')  {
+			if (level.SolidsData[tile.X, tile.Y] == '0' && ((tilesLeft > 0) || Unlimited))  {
 				level.SolidTiles.Grid[tile.X, tile.Y] = true;
 				level.SolidsData[tile.X, tile.Y] = selectedTile;
 				UpdateTilesAround(level, tile, 2);
+
+				if (tilesLeft > 0 && !Unlimited) {
+					tilesLeft--;
+				}
 			}
 		} else { // mining
 			if (level.SolidsData[tile.X, tile.Y] != '0') {
 				level.SolidTiles.Grid[tile.X, tile.Y] = false;
 				level.SolidsData[tile.X, tile.Y] = '0';
 				UpdateTilesAround(level, tile, 2);
+
+				if (!Unlimited && controller is not null && (!controller.origMap[tile.X, tile.Y])) {
+					tilesLeft++;
+				}
 			}
 		}
-		
-		orig(level);
 	}
 
 	private static void UpdateTilesAround(Level level, Point tile, int radius) {
@@ -77,32 +91,44 @@ public static class BuildHandler {
 		}
 	}
 
-	private static void RenderBuildCursor(Scene scene) {
-		if (scene is not Level level || level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere)) return;
-		Draw.HollowRect(new Vector2(mouse_pos.X - (mouse_pos.X % 8), mouse_pos.Y - (mouse_pos.Y % 8)) + level.LevelOffset, 8, 8, valid_position switch {
-			false => Color.Red,
-			true when building || mining => Color.Yellow,
-			_ => Color.LightGreen
-		});
-	}
-
-	public static void IL_GameplayRendererRender_RenderBuildCursor(ILContext il) {
-		ILCursor cursor = new ILCursor(il);
-
-		cursor.GotoNext(MoveType.After, cursor => cursor.MatchOr());
-		cursor.Index++;
-		cursor.EmitLdarg1();
-		cursor.EmitDelegate(RenderBuildCursor);
-
+	public static void OnLoadingThread_AddCursorDisplay(Level level) {
+		level.Add(new BuildCursorDisplay());
 	}
 
 	public static void ApplyHooks() {
 		On.Celeste.Level.Update += On_LevelUpdate_Build;
-		IL.Celeste.GameplayRenderer.Render += IL_GameplayRendererRender_RenderBuildCursor;
+		Everest.Events.LevelLoader.OnLoadingThread += OnLoadingThread_AddCursorDisplay;
 	}
 
 	public static void RemoveHooks() {
 		On.Celeste.Level.Update -= On_LevelUpdate_Build;
-		IL.Celeste.GameplayRenderer.Render -= IL_GameplayRendererRender_RenderBuildCursor;
+		Everest.Events.LevelLoader.OnLoadingThread -= OnLoadingThread_AddCursorDisplay;
 	}
+}
+
+public sealed class BuildCursorDisplay : Entity {
+	public BuildCursorDisplay() {
+		Tag = Tags.HUD | Tags.Global;
+		Depth = -0xabcdef;
+	}
+
+	public override void Render() {
+		base.Render();
+		if (Scene is not Level level || level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere)) return;
+		Vector2 cursorPos = new Vector2(BuildHandler.mouse_pos.X - (BuildHandler.mouse_pos.X % 8), BuildHandler.mouse_pos.Y - (BuildHandler.mouse_pos.Y % 8)) + level.LevelOffset;
+		Color cursorColor = BuildHandler.valid_position switch {
+			false => Color.Red,
+			true when BuildHandler.building || BuildHandler.mining => Color.Yellow,
+			_ => Color.LightGreen
+		};
+
+		for (int i = 0; i < 6; i++) {
+			Draw.HollowRect(level.WorldToScreen(cursorPos) + new Vector2(i, i), 8*6 - 2*i, 8*6 - 2*i, cursorColor);
+		}
+
+		if (!BuildHandler.Unlimited) {
+			ActiveFont.Draw($"{BuildHandler.TilesLeft}/{BuildHandler.TileLimit}", level.WorldToScreen(cursorPos + new Vector2(8, 8)), Vector2.Zero, Vector2.One / 2, cursorColor);
+		}
+	}
+
 }

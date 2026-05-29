@@ -160,7 +160,7 @@ public static class HDShaderHandler {
 			}
 
 			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, target == origTarget ? null : passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
-			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, target == origTarget && SaveData.Instance.Assists.MirrorMode ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}
 

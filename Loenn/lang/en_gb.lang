@@ -4,6 +4,7 @@ triggers.YaoiHelper/MouseMovement.placements.name.main=Mouse Control
 triggers.YaoiHelper/WindowDance.placements.name.main=Window Dance
 triggers.YaoiHelper/DisableGlitch.placements.name.main=Disable Glitch Effects
 triggers.YaoiHelper/GlobalTimer.placements.name.main=Global Timer
+triggers.YaoiHelper/PlayerOpacity.placements.name.main=VERY BUGGY Player Opacity
 
 entities.YaoiHelper/HDShaderController.placements.name.main=HD Shader Controller
 entities.YaoiHelper/BuildController.placements.name.main=Build Controller

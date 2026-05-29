@@ -43,15 +43,13 @@ uniform float4x4 ViewMatrix;
 uniform float4x4 TransformMatrix;
 
 DECLARE_TEXTURE(text, 0);
-DECLARE_TEXTURE(mask, 3);
 
 float4 SpritePixelShader(float2 uv : TEXCOORD0) : SV_TARGET0
 {
 	float3 p = float3(float2(uv.x * 5. + .5 * Time, uv.y * 5.) + CamPos / Dimensions, .5 * Time);
 	float n = fbm(p + fbm(p + fbm(p + fbm(p))));
 
-	float4 mask = SAMPLE_TEXTURE(mask, uv);
-	float4 bg = SAMPLE_TEXTURE(text, float2(uv.x + (fbm(n) - .5) / 3 * mask.r, uv.y + (n - .5) / 3 * mask.r));
+	float4 bg = SAMPLE_TEXTURE(text, float2(uv.x + (fbm(n) - .5) / 3, uv.y + (n - .5) / 3));
 
 	return bg;
 }
