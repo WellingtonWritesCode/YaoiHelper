@@ -5,14 +5,14 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity(["YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger"])]
-public class MouseMovement : Trigger {
+[CustomEntity(["YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger", $"{nameof(YaoiHelper)}/{nameof(MouseMovementTrigger)}"])]
+public sealed class MouseMovementTrigger : Trigger {
 	private Vector2 mousePos;
 
-	public bool Fling;
-	public bool AllowDashing;
+	public readonly bool Fling;
+	public readonly bool AllowDashing;
 
-	public MouseMovement(EntityData data, Vector2 offset) : base(data, offset) {
+	public MouseMovementTrigger(EntityData data, Vector2 offset) : base(data, offset) {
 		Visible = true;
 		Fling = data.Bool("fling");
 		AllowDashing = data.Bool("allow_dashing");
@@ -28,13 +28,11 @@ public class MouseMovement : Trigger {
 		if (!CollideCheck(player) && Fling) {
 			player.Speed += (player.Position - last) * 10;
 		}
-
 	}
 
 	public override void Update() {
 		base.Update();
 		mousePos = SceneAs<Level>().ScreenToWorld(new Vector2(MInput.Mouse.X - Engine.Viewport.X, MInput.Mouse.Y - Engine.Viewport.Y));
-
 	}
 
 	public override void Render() {

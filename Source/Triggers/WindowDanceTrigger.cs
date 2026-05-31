@@ -6,10 +6,10 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity("YaoiHelper/WindowDance")]
+[CustomEntity(["YaoiHelper/WindowDance", $"{nameof(YaoiHelper)}/{nameof(WindowDanceTrigger)}"])]
 public sealed partial class WindowDanceTrigger : Trigger {
-	public static Vector2 bounds;
-	public static float zoom;
+	private static Vector2 bounds;
+	private static float zoom;
 	private Vector2 windowSize => bounds / zoom;
 
 	public WindowDanceTrigger(EntityData data, Vector2 offset) : base(data, offset) {

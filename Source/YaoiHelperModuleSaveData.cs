@@ -1,5 +1,4 @@
 namespace Celeste.Mod.YaoiHelper;
 
-public class YaoiHelperModuleSaveData : EverestModuleSaveData {
-
+public sealed class YaoiHelperModuleSaveData : EverestModuleSaveData {
 }

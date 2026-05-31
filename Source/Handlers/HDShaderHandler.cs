@@ -12,19 +12,28 @@ using MonoMod.Cil;
 namespace Celeste.Mod.YaoiHelper.Handlers;
 
 // TODO: maybe make this a renderer?
+[Submodule]
 public static class HDShaderHandler {
 	private static readonly List<VirtualRenderTarget> flipflop_targets = new(2) { 
 		VirtualContent.CreateRenderTarget("hd-shader-flip", 1920, 1080),
 		VirtualContent.CreateRenderTarget("hd-shader-flop", 1920, 1080),
 	};
+			
+	internal static void ApplyHooks() {
+		IL.Celeste.Level.Render += IL_LevelRender_ApplyShader;
+	}
 
-	public static void IL_LevelRender_ApplyShader(ILContext il) {
+	internal static void RemoveHooks() {
+		IL.Celeste.Level.Render -= IL_LevelRender_ApplyShader;
+	}
+
+	internal static void IL_LevelRender_ApplyShader(ILContext il) {
 		ILCursor cursor = new ILCursor(il);
 
 		cursor.GotoNext(MoveType.Before,
-				cursor => cursor.MatchLdnull(), 
-				cursor => cursor.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
-			);
+			cursor => cursor.MatchLdnull(), 
+			cursor => cursor.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
+		);
 		cursor.Index -= 2;
 
 		cursor.MoveAfterLabels();
@@ -108,7 +117,7 @@ public static class HDShaderHandler {
 		Vector2 vector = new Vector2(320f, 180f);
 		Vector2 vector2 = vector / level.ZoomTarget;
 		Vector2 vector3 = level.ZoomTarget != 1f ? (level.ZoomFocusPoint - vector2 / 2f) / (vector - vector2) * vector : Vector2.Zero;
-		float scale = level.Zoom * ((vector.X -  level.ScreenPadding * 2f) / 320f);
+		float scale = level.Zoom * ((vector.X - level.ScreenPadding * 2f) / 320f);
 		Vector2 vector4 = new Vector2(level.ScreenPadding, level.ScreenPadding * /* 9f/16f, which is */ 0.5625f);
 
 		Engine.Graphics.GraphicsDevice.SetRenderTarget(applyShaders ? (RenderTarget2D)flipflop_targets[0] : origTarget);
@@ -174,13 +183,4 @@ public static class HDShaderHandler {
 		}
 		Draw.SpriteBatch.End();
 	}
-			
-	public static void ApplyHooks() {
-		IL.Celeste.Level.Render += IL_LevelRender_ApplyShader;
-	}
-
-	public static void RemoveHooks() {
-		IL.Celeste.Level.Render -= IL_LevelRender_ApplyShader;
-	}
-
 }

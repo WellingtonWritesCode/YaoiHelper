@@ -1,0 +1,4 @@
+<Solution>
+	<Project Path="Analyzer/YaoiHelper.Analyzer.csproj" />
+	<Project Path="Source/YaoiHelper.csproj" />
+</Solution>
