@@ -10,3 +10,20 @@ entities.YaoiHelper/HDShaderController.placements.name.main=HD Shader Controller
 entities.YaoiHelper/BuildController.placements.name.main=Build Controller
 entities.YaoiHelper/ShaderMask.placements.name.main=HD Shader Mask
 entities.YaoiHelper/BuildRegion.placements.name.main=Build Allowed Region
+
+triggers.YaoiHelper/ForceInputsTrigger.placements.name.main=Force Inputs
+triggers.YaoiHelper/ForceInputsTrigger.placements.description.main=A barebones Celeste interface that allows you to force certain inputs to be pressed/released from the "point of view" of `Player.Update()`.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.inputs=List of comma-separated inputs, formatted similarly to a TAS (e.g "R,U,X"). An input can be prefixed with ! to force releasing it.\nSupported inputs: LRUDJXZ (in TAS format).
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.flag=If non-empty, the trigger will only be active when this flag is set.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.flagInverted=Invert the requirement for the flag (if there is one) from set to unset.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.showStatus=Whether status text at the bottom-left corner of the screen should be shown while the player is inside the trigger.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.statusPrefix=What to display in the status alongside the inputs.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.hideStatusInCutscenes=Use with Show Status - whether the status should be hidden while in a cutscene / bino.
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.extraStatusVerticalPadding=Extra distance for the status text from the bottom of the screen in pixels.
+
+triggers.YaoiHelper/ShowStatusTrigger.placements.name.main=Show Status
+triggers.YaoiHelper/ShowStatusTrigger.placements.description.main=Displays a piece of text in the bottom left corner on the screen.
+triggers.YaoiHelper/ShowStatusTrigger.attributes.description.text=Text to display. Allows colors, e.g `{#ff0000}red text` or `{00ff00}green{#}normal`.
+triggers.YaoiHelper/ShowStatusTrigger.attributes.description.hideInCutscenes=Whether the text should be hidden while in a cutscene / bino.
+triggers.YaoiHelper/ShowStatusTrigger.attributes.description.extraVerticalPadding=Extra distance from the bottom of the screen in pixels.
+triggers.YaoiHelper/ShowStatusTrigger.attributes.description.instantRender=Use a slightly more expensive approach to render/unrender on the same frame the player enters/leaves the trigger, instead of up to 1f late on entry and up to 2f late on exit.
