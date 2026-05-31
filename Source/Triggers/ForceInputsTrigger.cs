@@ -85,6 +85,7 @@ internal sealed class ForceInputsTrigger : Trigger {
 			case 'j':
 			case 'x':
 			case 'z':
+			case 'g':
 				break;
 			default:
 				throw new ArgumentException($"unknown input '{input[i]}'!");
@@ -107,7 +108,8 @@ internal sealed class ForceInputsTrigger : Trigger {
 		ForcedD: checkInputOverride(inputs, 'd'),
 		ForcedJ: checkInputOverride(inputs, 'j'),
 		ForcedX: checkInputOverride(inputs, 'x'),
-		ForcedZ: checkInputOverride(inputs, 'z')
+		ForcedZ: checkInputOverride(inputs, 'z'),
+		ForcedG: checkInputOverride(inputs, 'g')
 	);
 
 	// TODO this just reuses the same logic from ShowStatusTrigger, fold them into one at some (barry, 63 voice) Pint

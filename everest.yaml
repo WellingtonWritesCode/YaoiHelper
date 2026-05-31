@@ -1,6 +1,6 @@
 - DLL: bin/YaoiHelper.dll
   Name: YaoiHelper
-  Version: 0.3.10
+  Version: 0.3.11
   Dependencies:
     - Name: Everest
       Version: 1.6305.0
@@ -9,3 +9,5 @@
   OptionalDependencies:
     - Name: SpeedrunTool
       Version: 3.16.1 # next tag after 6c6e51c 
+    - Name: VivHelper
+      Version: 1.14.10

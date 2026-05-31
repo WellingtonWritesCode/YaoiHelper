@@ -20,7 +20,8 @@ public readonly record struct ForcedInputSet(
 	ForcedInputState ForcedD,
 	ForcedInputState ForcedJ,
 	ForcedInputState ForcedX,
-	ForcedInputState ForcedZ
+	ForcedInputState ForcedZ,
+	ForcedInputState ForcedG
 ) {
 	internal void Validate() {
 		static void validateOne(ForcedInputState state) {
@@ -34,6 +35,7 @@ public readonly record struct ForcedInputSet(
 		validateOne(ForcedJ);
 		validateOne(ForcedX);
 		validateOne(ForcedZ);
+		validateOne(ForcedG);
 	}
 };
 
@@ -43,6 +45,7 @@ public static class ForceInputsHandler {
 	private static bool? globalForcedJ = null;
 	private static bool? globalForcedX = null;
 	private static bool? globalForcedZ = null;
+	private static bool? globalForcedG = null;
 
 	private static DynData<VirtualJoystick>? aimDd;
 
@@ -51,6 +54,7 @@ public static class ForceInputsHandler {
 	private static Hook? virtualButtonGetReleasedHook;
 	private static Hook? inputGetDashPressedHook;
 	private static Hook? inputGetCrouchDashPressedHook;
+	private static Hook? inputGetGrabCheckHook;
 
 	public static void WithForced(in ForcedInputSet forced, Action fn) {
 		forced.Validate();
@@ -127,6 +131,7 @@ public static class ForceInputsHandler {
 		globalForcedJ = toBool(forced.ForcedJ);
 		globalForcedX = toBool(forced.ForcedX);
 		globalForcedZ = toBool(forced.ForcedZ);
+		globalForcedG = toBool(forced.ForcedG);
 
 		try {
 			hooksEnabled = true;
@@ -177,6 +182,11 @@ public static class ForceInputsHandler {
 				throw new MissingMethodException(nameof(Input), "get_CrouchDashPressed"),
 			On_InputGetCrouchDashPressed_OverrideInput
 		);
+		inputGetGrabCheckHook = new Hook(
+			typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public)?.GetGetMethod() ??
+				throw new MissingMethodException(nameof(Input), "get_GrabCheck"),
+			On_InputGetGrabCheck_OverrideInput
+		);
 	}
 
 	internal static void RemoveHooks() {
@@ -187,12 +197,14 @@ public static class ForceInputsHandler {
 		virtualButtonGetReleasedHook?.Dispose();
 		inputGetDashPressedHook?.Dispose();
 		inputGetCrouchDashPressedHook?.Dispose();
+		inputGetGrabCheckHook?.Dispose();
 
 		virtualButtonGetPressedHook = null;
 		virtualButtonGetCheckHook = null;
 		virtualButtonGetReleasedHook = null;
 		inputGetDashPressedHook = null;
 		inputGetCrouchDashPressedHook = null;
+		inputGetGrabCheckHook = null;
 	}
 
 	internal static PlayerDeadBody On_PlayerDie_ResetState(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
@@ -207,6 +219,8 @@ public static class ForceInputsHandler {
 			return globalForcedX;
 		if (button == Input.CrouchDash)
 			return globalForcedZ;
+		if (button == Input.Grab)
+			return globalForcedG;
 		return null;
 	}
 
@@ -228,9 +242,14 @@ public static class ForceInputsHandler {
 		return hooksEnabled ? (globalForcedZ ?? orig()) : orig();
 	}
 
+	internal static bool On_InputGetGrabCheck_OverrideInput(Func<bool> orig) {
+		return hooksEnabled ? (globalForcedG ?? orig()) : orig();
+	}
+
 	private static void resetGlobal() {
 		globalForcedJ = null;
 		globalForcedX = null;
 		globalForcedZ = null;
+		globalForcedG = null;
 	}
 }

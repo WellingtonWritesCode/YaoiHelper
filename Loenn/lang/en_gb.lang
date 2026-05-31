@@ -11,15 +11,35 @@ entities.YaoiHelper/BuildController.placements.name.main=Build Controller
 entities.YaoiHelper/ShaderMask.placements.name.main=HD Shader Mask
 entities.YaoiHelper/BuildRegion.placements.name.main=Build Allowed Region
 
+triggers.YaoiHelper/BetterTimerTrigger.placements.name.main=Better Timer
+triggers.YaoiHelper/BetterTimerTrigger.placements.description.main='Cause all the other timer triggers suck.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.time=The amount of time (in seconds) to wait before setting the flag. Ignored if the mode is "Frame count".
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.frames=The amount of frames to wait before setting the flag. Ignored if the mode is not "Frame count".
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.flagToSet=Flag to set once the timer is finished.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.unsetFlag=Whether to unset the flag instead of setting it when the timer is finished.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.controlFlag=If non-empty, the timer will only tick down if this flag is set.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.controlFlagInverted=Invert the requirement for the control flag (if there is one) from set to unset.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.mode=The mode to use.\nDeltaTime = What you probably want.\nRawDeltaTime = Real-time, ignoring things like modified game speed and freezeframes.\nFrame count = count frames instead of seconds.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.resetTimerOnLeave=Whether the internal timer should be reset when the player leaves the trigger.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.resetTimerOnControlFlagUnset=Whether the internal timer should be reset EVERY FRAME while the control flag isn't set (affected as one would expect by Control Flag Inverted).
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.unsetOnRoomLoad=Whether the Flag To Set should be unset (or set if Unset Flag is enabled) on room load.
+triggers.YaoiHelper/BetterTimerTrigger.attributes.name.compareLOnly=Compare With >
+triggers.YaoiHelper/BetterTimerTrigger.attributes.description.compareLOnly=Whether the comparison should be (timer > time) instead of (timer >= time), meaning the internal timer must be larger than the time specified to activate.\nProbably not very useful unless you're using the frame count mode.
+
 triggers.YaoiHelper/ForceInputsTrigger.placements.name.main=Force Inputs
 triggers.YaoiHelper/ForceInputsTrigger.placements.description.main=A barebones Celeste interface that allows you to force certain inputs to be pressed/released from the "point of view" of `Player.Update()`.
-triggers.YaoiHelper/ForceInputsTrigger.attributes.description.inputs=List of comma-separated inputs, formatted similarly to a TAS (e.g "R,U,X"). An input can be prefixed with ! to force releasing it.\nSupported inputs: LRUDJXZ (in TAS format).
+triggers.YaoiHelper/ForceInputsTrigger.attributes.description.inputs=List of comma-separated inputs, formatted similarly to a TAS (e.g "R,U,X"). An input can be prefixed with ! to force releasing it.\nSupported inputs: LRUDJXZG (in TAS format).
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.flag=If non-empty, the trigger will only be active when this flag is set.
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.flagInverted=Invert the requirement for the flag (if there is one) from set to unset.
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.showStatus=Whether status text at the bottom-left corner of the screen should be shown while the player is inside the trigger.
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.statusPrefix=What to display in the status alongside the inputs.
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.hideStatusInCutscenes=Use with Show Status - whether the status should be hidden while in a cutscene / bino.
 triggers.YaoiHelper/ForceInputsTrigger.attributes.description.extraStatusVerticalPadding=Extra distance for the status text from the bottom of the screen in pixels.
+
+triggers.YaoiHelper/NonBrokenInstantCameraCatchupTrigger.placements.name.main=Non-Broken Instant Camera Catchup
+triggers.YaoiHelper/NonBrokenInstantCameraCatchupTrigger.placements.description.main=So VivHelper's Instant Camera Catchup trigger is broken because it does this thing where the camera remains locked onto you until OnLeave is called.\nSo if something happens that causes it to not get called (say, teleporting with debug map, save & quit, etc.), the camera will stay locked onto you for the rest of the session (unless you enter and leave another Instant Camera Catchup trigger).\nThis fixes that by making the camera lock expire after 1 frame (even if you stay inside the trigger), so it actually works like "just catch up the camera" like you probably thought it already did.
+triggers.YaoiHelper/NonBrokenInstantCameraCatchupTrigger.attributes.description.flag=If non-empty, the trigger will only work when this flag is set.
+triggers.YaoiHelper/NonBrokenInstantCameraCatchupTrigger.attributes.description.flagInverted=Invert the requirement for the flag (if there is one) from set to unset.
 
 triggers.YaoiHelper/ShowStatusTrigger.placements.name.main=Show Status
 triggers.YaoiHelper/ShowStatusTrigger.placements.description.main=Displays a piece of text in the bottom left corner on the screen.
