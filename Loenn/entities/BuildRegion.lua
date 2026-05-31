@@ -6,6 +6,7 @@ buildRegion.placements = {
 	data = {
 		width = 16,
 		height = 16,
+		prevent_building_when_inside = false
 	}
 }
 

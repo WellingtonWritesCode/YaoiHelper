@@ -7,8 +7,10 @@ namespace Celeste.Mod.YaoiHelper.Triggers;
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(BuildRegion)}")]
 [Tracked]
 public sealed class BuildRegion : Entity {
+	public bool PreventBuildingWhenInside;
 	public BuildRegion(EntityData data, Vector2 offset) : base(data.Position + offset) {
 		Collider = new Hitbox(data.Width, data.Height);
+		PreventBuildingWhenInside = data.Bool("prevent_building_when_inside");
 	}
 
 	// public override void Render() {
