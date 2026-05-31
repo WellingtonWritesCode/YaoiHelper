@@ -127,7 +127,7 @@ public static class BuildHandler {
 	}
 
 	internal static void OnLoadingThread_AddCursorDisplayAndClearBuilds(Level level) {
-        Reset(level.Session.Level);
+        Reset();
 		level.Add(new BuildCursorDisplay());
 	}
 }
