@@ -1,8 +1,0 @@
-root = true
-
-[*.cs]
-# braces on same line
-csharp_new_line_before_open_brace = false
-
-# shut up collection expression
-dotnet_style_prefer_collection_expression = never:none

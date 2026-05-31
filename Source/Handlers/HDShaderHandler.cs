@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.YaoiHelper.Entities;
@@ -43,11 +44,11 @@ public static class HDShaderHandler {
 		cursor.GotoNext(MoveType.Before, cursor => cursor.MatchLdloc2());
 		cursor.GotoPrev(MoveType.Before, cursor => cursor.MatchCall(typeof(Draw), "get_SpriteBatch"));
 
-		ILLabel dodge_regularrender = cursor.DefineLabel();
-		cursor.EmitBr(dodge_regularrender);
+		ILLabel dodgeRegularRender = cursor.DefineLabel();
+		cursor.EmitBr(dodgeRegularRender);
 
 		cursor.GotoNext(MoveType.After, cursor => cursor.MatchCallvirt<SpriteBatch>("End"));
-		cursor.MarkLabel(dodge_regularrender);
+		cursor.MarkLabel(dodgeRegularRender);
 
 		cursor.MoveAfterLabels();
 		cursor.EmitLdarg0();
@@ -150,7 +151,8 @@ public static class HDShaderHandler {
 			Draw.SpriteBatch.End();
 		}
 
-		RenderTarget2D source, target;
+		RenderTarget2D source;
+		RenderTarget2D? target;
 
 		// TODO: this wastes a draw call
 		for (int i = 0; i <= shaders.Count; i++) {
@@ -168,7 +170,15 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 			}
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, target == origTarget ? null : passShaderParams(shaders[i], level, target), target == null ? Engine.ScreenMatrix : Matrix.Identity);
+			Draw.SpriteBatch.Begin(
+				SpriteSortMode.Deferred,
+				BlendState.AlphaBlend,
+				SamplerState.PointClamp,
+				DepthStencilState.Default,
+				RasterizerState.CullNone,
+				target == origTarget ? null : passShaderParams(shaders[i], level, target ?? throw new InvalidOperationException("expected nonnull target if it's not orig")),
+				target == null ? Engine.ScreenMatrix : Matrix.Identity
+			);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, target == origTarget && SaveData.Instance.Assists.MirrorMode ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}

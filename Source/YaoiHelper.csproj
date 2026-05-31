@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>YaoiHelper</AssemblyName>
 		<RootNamespace>Celeste.Mod.YaoiHelper</RootNamespace>
-		<LangVersion>latest</LangVersion>
-		<CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.dll')">..\..\..</CelestePrefix>
-		<CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
-		<ZippedFiles>..\everest.yaml;..\bin\**\*.*;..\Audio\**\*.*;..\Dialog\**\*.*;..\Graphics\**\*.*;..\Ahorn\**\*.*;..\Loenn\**\*.*;..\Effects\**\*.*;</ZippedFiles>
+		<LangVersion>14.0</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+
+		<CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('../../../Celeste.dll')">../../..</CelestePrefix>
+		<CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
+		<ZippedFiles>../everest.yaml;../bin/**/*.*;../Audio/**/*.*;../Dialog/**/*.*;../Graphics/**/*.*;../Ahorn/**/*.*;../Loenn/**/*.*;../Effects/**/*.*;</ZippedFiles>
 	</PropertyGroup>
 
-	<!--Disable "Copy Local" for all references-->
 	<ItemDefinitionGroup>
 		<PackageReference PrivateAssets="all" ExcludeAssets="runtime" />
 		<Reference Private="false" />
@@ -25,31 +25,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CelesteMod.Publicizer" Version="*" CelesteAssembly="$(CelestePrefix)\Celeste.dll" />
-		<Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll" Private="false" />
-		<Reference Include="$(CelestePrefix)\FNA.dll" Private="false" />
+		<PackageReference Include="CelesteMod.Publicizer" Version="*" CelesteAssembly="$(CelestePrefix)/Celeste.dll" />
+		<Reference Include="$(CelestePrefix)/MMHOOK_Celeste.dll" Private="false" />
+		<Reference Include="$(CelestePrefix)/FNA.dll" Private="false" />
 	</ItemGroup>
 
-	<Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">
-		<Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\bin" />
-		<Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="..\bin" />
+	<Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)/$(AssemblyName).dll;$(OutputPath)/$(AssemblyName).pdb" Outputs="../bin/$(AssemblyName).dll;../bin/$(AssemblyName).pdb">
+		<Copy SourceFiles="$(OutputPath)/$(AssemblyName).dll" DestinationFolder="../bin" />
+		<Copy SourceFiles="$(OutputPath)/$(AssemblyName).pdb" DestinationFolder="../bin" />
 	</Target>
 
-	<Target Name="PackageMod" AfterTargets="CopyFiles" Inputs="$(ZippedFiles)" Outputs="..\YaoiHelper.zip" Condition="'$(Configuration)' == 'Release'">
+	<Target Name="PackageMod" AfterTargets="CopyFiles" Inputs="$(ZippedFiles)" Outputs="../YaoiHelper.zip" Condition="'$(Configuration)' == 'Release'">
 		<ItemGroup>
 			<FilesToPackage Include="$(ZippedFiles)" />
 		</ItemGroup>
-		<PackageMod Files="@(FilesToPackage)" OutputPath="..\YaoiHelper.zip" />
+		<PackageMod Files="@(FilesToPackage)" OutputPath="../YaoiHelper.zip" />
 	</Target>
 	
 	<PropertyGroup>
 		<PathMap>$(MSBuildProjectDirectory)=YaoiHelper/</PathMap>
 	</PropertyGroup>
 
-	<!-- Inline task used to create a .zip for the mod -->
-	<UsingTask TaskName="PackageMod"
-			   TaskFactory="RoslynCodeTaskFactory"
-			   AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+	<UsingTask TaskName="PackageMod" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll" >
 		<ParameterGroup>
 			<Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
 			<OutputPath ParameterType="System.String" Required="true" />
@@ -100,5 +97,4 @@
 			</Code>
 		</Task>
 	</UsingTask>
-
 </Project>

@@ -9,15 +9,21 @@ namespace Celeste.Mod.YaoiHelper.Interop;
 [Bootstrap]
 internal static class SpeedrunTool {
 	public const int StateManagerWaitingState = 3;
-	public static Func<int> GetStateManagerState;
+	public static Func<int> GetStateManagerState {
+		get => field ?? throw new InvalidOperationException("Init() not called yet");
+		private set;
+	}
 
 	internal static void Init() {
 		if (Everest.Loader.TryGetDependency(YaoiHelperModule.SRTModuleMetadata, out EverestModule srtModule)) {
 			// TODO figure out if this depends on a version later than 3.16.1
+			const string stateManagerTypeName = "Celeste.Mod.SpeedrunTool.SaveLoad.StateManager";
 			Assembly asm = srtModule.GetType().Assembly;
-			Type smType = asm.GetType("Celeste.Mod.SpeedrunTool.SaveLoad.StateManager", throwOnError: true);
-			PropertyInfo instanceProp = smType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-			PropertyInfo stateProp = smType.GetProperty("State", BindingFlags.Public | BindingFlags.Instance);
+			Type smType = asm.GetType(stateManagerTypeName, throwOnError: true)!;
+			PropertyInfo instanceProp = smType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public) ??
+				throw new MissingMemberException(stateManagerTypeName, "Instance");
+			PropertyInfo stateProp = smType.GetProperty("State", BindingFlags.Instance | BindingFlags.Public) ??
+				throw new MissingMemberException(stateManagerTypeName, "State");
 
 			// () => (int)StateManager.Instance.State
 			MemberExpression instance = Expression.Property(null, instanceProp);
@@ -31,17 +37,31 @@ internal static class SpeedrunTool {
 	}
 }
 
-[Bootstrap]
-internal static class SpeedrunToolSaveLoadImportsBootstrap {
-	internal static void Init() {
-		typeof(SpeedrunToolSaveLoadImports).ModInterop();
+internal static class SpeedrunToolSaveLoadImports {
+#pragma warning disable CS0649 // field is never assigned to
+	[ModImportName("SpeedrunTool.SaveLoad")]
+	private static class Inner {
+		public static Func<Type, string[], object>? RegisterStaticTypes;
+		public static Action<object>? Unregister;
+	}
+#pragma warning restore CS0649 // field is never assigned to
+
+	[Bootstrap]
+	private static class Bootstrap {
+		internal static void Init() {
+			typeof(Inner).ModInterop();
+		}
+	}
+
+	public static object RegisterStaticTypes(Type type, params string[] memberNames) {
+		if (Inner.RegisterStaticTypes is null)
+			throw new InvalidOperationException("bootstrap Init() not called yet");
+		return Inner.RegisterStaticTypes(type, memberNames);
+	}
+
+	public static void Unregister(object obj) {
+		if (Inner.Unregister is null)
+			throw new InvalidOperationException("bootstrap Init() not called yet");
+		Inner.Unregister(obj);
 	}
 }
-
-#pragma warning disable CS0649 // field is never assigned to
-[ModImportName("SpeedrunTool.SaveLoad")]
-internal static class SpeedrunToolSaveLoadImports {
-	public static Func<Type, string[], object> RegisterStaticTypes;
-	public static Action<object> Unregister;
-}
-#pragma warning restore CS0649 // field is never assigned to

@@ -1,5 +1,4 @@
-﻿using MonoMod.ModInterop;
-using MonoMod.RuntimeDetour;
+﻿using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,10 @@ namespace Celeste.Mod.YaoiHelper;
 public sealed class YaoiHelperModule : EverestModule {
 	public const string DefaultDetourID = "YaoiHelper";
 
-	public static YaoiHelperModule Instance { get; private set; }
+	public static YaoiHelperModule Instance {
+		get => field ?? throw new InvalidOperationException("YaoiHelperModule not instantiated yet");
+		private set;
+	}
 
 	public override Type SettingsType => typeof(YaoiHelperModuleSettings);
 	public static YaoiHelperModuleSettings Settings => (YaoiHelperModuleSettings) Instance._Settings;
@@ -27,7 +29,7 @@ public sealed class YaoiHelperModule : EverestModule {
 	};
 	public static bool SRTLoaded { get; private set; }
 
-	private static Dictionary<Type, SubmoduleAttribute> submodules;
+	private static Dictionary<Type, SubmoduleAttribute>? submodules;
 
 	public YaoiHelperModule() {
 		Instance = this;
@@ -41,13 +43,13 @@ public sealed class YaoiHelperModule : EverestModule {
 	public override void Load() {
 		SRTLoaded = Everest.Loader.DependencyLoaded(SRTModuleMetadata);
 
-		Dictionary<Type, BootstrapAttribute> bootstrap = getTypesWithAttr<BootstrapAttribute>(typeof(YaoiHelperModule).Assembly).ToDictionary(static t => t, static t => t.GetCustomAttribute<BootstrapAttribute>());
+		Dictionary<Type, BootstrapAttribute> bootstrap = getTypesWithAttr<BootstrapAttribute>(typeof(YaoiHelperModule).Assembly);
 		foreach ((Type t, BootstrapAttribute attr) in bootstrap.OrderBy(static kvp => kvp.Value.Order)) {
 			Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Load", $"calling bootstrap {t.Name} (Order = {attr.Order})");
 			invoke(t, "Init");
 		}
 
-		submodules = getTypesWithAttr<SubmoduleAttribute>(typeof(YaoiHelperModule).Assembly).ToDictionary(static t => t, static t => t.GetCustomAttribute<SubmoduleAttribute>());
+		submodules = getTypesWithAttr<SubmoduleAttribute>(typeof(YaoiHelperModule).Assembly);
 		using (new DetourConfigContext(new DetourConfig(
 			DefaultDetourID,
 			priority: 0
@@ -75,23 +77,27 @@ public sealed class YaoiHelperModule : EverestModule {
 	}
 
 	public override void Unload() {
-		foreach ((Type t, SubmoduleAttribute attr) in submodules.OrderByDescending(static kvp => kvp.Value.Order)) {
-			if (SRTLoaded && attr.HasSRTSupport) {
-				Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading SRT support for submodule {t.Name} (Order = {attr.Order})");
-				invoke(t, "UnregisterSRTSupport");
+		if (submodules is not null) {
+			foreach ((Type t, SubmoduleAttribute attr) in submodules.OrderByDescending(static kvp => kvp.Value.Order)) {
+				if (SRTLoaded && attr.HasSRTSupport) {
+					Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading SRT support for submodule {t.Name} (Order = {attr.Order})");
+					invoke(t, "UnregisterSRTSupport");
+				}
+				Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading submodule {t.Name} (Order = {attr.Order})");
+				invoke(t, "RemoveHooks");
 			}
-			Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading submodule {t.Name} (Order = {attr.Order})");
-			invoke(t, "RemoveHooks");
 		}
 	}
 
-	private static Type[] getTypesWithAttr<T>(Assembly asm) where T : Attribute {
+	private static Dictionary<Type, T> getTypesWithAttr<T>(Assembly asm) where T : Attribute {
 		// enumerate upfront to hit ReflectionTypeLoadException if there is one
+		Type[] types;
 		try {
-			return asm.GetTypes().Where(static t => t.IsDefined(typeof(T))).ToArray();
+			types = asm.GetTypes().Where(static t => t.IsDefined(typeof(T))).ToArray();
 		} catch (ReflectionTypeLoadException e) {
-			return e.Types.Where(static t => t is not null && t.IsDefined(typeof(T))).ToArray();
+			types = e.Types.Where(static t => t is not null && t.IsDefined(typeof(T))).ToArray()!;
 		}
+		return types.ToDictionary(static t => t, static t => t.GetCustomAttribute<T>() ?? throw new InvalidOperationException("expected GetCustomAttribute to succeed after IsDefined returned true"));
 	}
 
 	private static void invoke(Type t, string m) {

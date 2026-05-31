@@ -34,10 +34,10 @@ public sealed class PlayerOpacityTrigger : Trigger {
 	public static void IL_ImageRender_SetPlayerOpacity(ILContext il) {
 		ILCursor cursor = new ILCursor(il);
 
-		cursor.GotoNext(MoveType.After, cursor => cursor.MatchLdfld(typeof(GraphicsComponent).GetField("Color")));
+		cursor.GotoNext(MoveType.After, cursor => cursor.MatchLdfld(typeof(GraphicsComponent).GetField("Color") ?? throw new MissingFieldException(nameof(GraphicsComponent), "Color")));
 		cursor.EmitLdarg0();
 		cursor.EmitDelegate(colorFactor);
-		cursor.EmitCall(typeof(Color).GetMethod("op_Multiply"));
+		cursor.EmitCall(typeof(Color).GetMethod("op_Multiply") ?? throw new MissingMethodException(nameof(Color), "op_Multiply"));
 	}
 
 	public static void ApplyHooks() {

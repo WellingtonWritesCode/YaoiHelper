@@ -12,7 +12,7 @@ public sealed class HDShaderController : Entity {
 	public readonly bool RenderPlayerOver;
 	public readonly bool RenderLevelOver;
 
-	private List<VirtualRenderTarget> maskGroups;
+	private readonly List<VirtualRenderTarget> maskGroups = new();
 
 	public HDShaderController(EntityData data, Vector2 offset) : base(data.Position + offset) {
 		Visible = false;
@@ -22,14 +22,13 @@ public sealed class HDShaderController : Entity {
 
 	public override void Awake(Scene scene) {
 		base.Awake(scene);
-		maskGroups = new();
-
+		maskGroups.Clear();
 		foreach (string group in scene.Tracker.GetEntities<ShaderMask>().Cast<ShaderMask>().SelectMany(x => x.MaskGroups)) {
-			AddMaskGroup(group);
+			addMaskGroup(group);
 		}
 	}
 
-	private void AddMaskGroup(string name) {
+	private void addMaskGroup(string name) {
 		if (maskGroups.Select(x => x.Name).Contains($"hd-shader-mask-{name}")) return;
 		maskGroups.Add(VirtualContent.CreateRenderTarget($"hd-shader-mask-{name}", 1920, 1080));
 	}
@@ -40,7 +39,7 @@ public sealed class HDShaderController : Entity {
 	}
 
 	public VirtualRenderTarget GetMaskGroupTarget(string name) {
-		return maskGroups.FirstOrDefault(x => x.Name == $"hd-shader-mask-{name}", null) ?? throw new KeyNotFoundException("No matching mask group found");
+		return maskGroups.FirstOrDefault(x => x?.Name == $"hd-shader-mask-{name}", null) ?? throw new KeyNotFoundException("No matching mask group found");
 	}
 }
 

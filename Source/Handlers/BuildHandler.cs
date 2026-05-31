@@ -67,12 +67,12 @@ public static class BuildHandler {
 		} else {
 			IsValidPosition = false;
 			foreach (BuildRegion buildRegion in level.Tracker.GetEntities<BuildRegion>().Cast<BuildRegion>()) {
-				IsValidPosition = IsValidPosition || (buildRegion.Collider as Hitbox).Collide(MousePos + level.LevelOffset);
+				IsValidPosition = IsValidPosition || ((Hitbox)buildRegion.Collider).Collide(MousePos + level.LevelOffset);
 			}
 
 			if (IsValidPosition && level.Tracker.GetEntity<Player>() is Player player) {
 				foreach (BuildRegion buildRegion in level.Tracker.GetEntities<BuildRegion>().Cast<BuildRegion>().Where(x => x.PreventBuildingWhenInside)) {
-					IsValidPosition = IsValidPosition && !(player.Collider as Hitbox).Collide(buildRegion.Collider);
+					IsValidPosition = IsValidPosition && !((Hitbox)player.Collider).Collide(buildRegion.Collider);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public static class BuildHandler {
 
 				level.SolidTiles.Grid[tile.X, tile.Y] = true;
 				level.SolidsData[tile.X, tile.Y] = selectedTile;
-				UpdateTilesAround(level, tile, 2);
+				updateTilesAround(level, tile, 2);
 			}
 		} else { // mining
 			if (level.SolidsData[tile.X, tile.Y] != '0') {
@@ -107,12 +107,12 @@ public static class BuildHandler {
 
 				level.SolidTiles.Grid[tile.X, tile.Y] = false;
 				level.SolidsData[tile.X, tile.Y] = '0';
-				UpdateTilesAround(level, tile, 2);
+				updateTilesAround(level, tile, 2);
 			}
 		}
 	}
 
-	private static void UpdateTilesAround(Level level, Point tile, int radius) {
+	private static void updateTilesAround(Level level, Point tile, int radius) {
 		Autotiler.Generated genned = GFX.FGAutotiler.Generate(level.SolidsData, tile.X - radius, tile.Y - radius, 2 * radius + 1, 2 * radius + 1, forceSolid: false, '0', new Autotiler.Behaviour {
 			EdgesExtend = true,
 			EdgesIgnoreOutOfLevel = false,

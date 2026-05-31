@@ -1,4 +1,5 @@
 using Celeste.Mod.YaoiHelper.Interop;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -9,7 +10,7 @@ namespace Celeste.Mod.YaoiHelper.Handlers;
 [Submodule(HasSRTSupport = true)]
 public static class GlobalTimerHandler {
 	private static readonly List<GlobalFlagCountdown> countdowns = new();
-	private static object countdownsSRTHandle;
+	private static object? countdownsSRTHandle;
 
 	public static IReadOnlyList<GlobalFlagCountdown> Countdowns => countdowns;
 	public static void ClearCountdowns() => countdowns.Clear();
@@ -24,12 +25,16 @@ public static class GlobalTimerHandler {
 	}
 
 	internal static void RegisterSRTSupport() {
+		if (countdownsSRTHandle is not null)
+			throw new InvalidOperationException("SRT handle for countdowns field is already registered; did this somehow get called multiple times?");
 		countdownsSRTHandle = SpeedrunToolSaveLoadImports.RegisterStaticTypes(typeof(GlobalTimerHandler), [nameof(countdowns)]);
 	}
 
 	internal static void UnregisterSRTSupport() {
-		SpeedrunToolSaveLoadImports.Unregister(countdownsSRTHandle);
-		countdownsSRTHandle = null;
+		if (countdownsSRTHandle is not null) {
+			SpeedrunToolSaveLoadImports.Unregister(countdownsSRTHandle);
+			countdownsSRTHandle = null;
+		}
 	}
 
 	internal static void On_EngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
