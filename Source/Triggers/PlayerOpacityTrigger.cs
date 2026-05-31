@@ -7,14 +7,15 @@ using MonoMod.Cil;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity($"{nameof(YaoiHelper)}/{nameof(PlayerOpacity)}")]
-public sealed class PlayerOpacity : Trigger {
+[Submodule]
+[CustomEntity(["YaoiHelper/PlayerOpacity", $"{nameof(YaoiHelper)}/{nameof(PlayerOpacityTrigger)}"])]
+public sealed class PlayerOpacityTrigger : Trigger {
 	// TODO: make this a data component
-	public static float Opacity = 1f;
+	public static float Opacity = 1f; // TODO kill everyone
 	public readonly float setOpacity;
 
-	public PlayerOpacity(EntityData data, Vector2 offset) : base(data, offset) {
-		setOpacity= data.Float("opacity");
+	public PlayerOpacityTrigger(EntityData data, Vector2 offset) : base(data, offset) {
+		setOpacity = data.Float("opacity");
 	}
 
 	public override void OnEnter(Player player) {

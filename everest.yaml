@@ -6,3 +6,6 @@
       Version: 1.6305.0
     - Name: EverestCore
       Version: 1.5935.0
+  OptionalDependencies:
+    - Name: SpeedrunTool
+      Version: 3.16.1 # next tag after 6c6e51c 

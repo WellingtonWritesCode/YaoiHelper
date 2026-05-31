@@ -1,5 +1,4 @@
 namespace Celeste.Mod.YaoiHelper;
 
-public class YaoiHelperModuleSession : EverestModuleSession {
-
+public sealed class YaoiHelperModuleSession : EverestModuleSession {
 }

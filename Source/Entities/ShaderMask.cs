@@ -5,14 +5,15 @@ using Celeste.Mod.YaoiHelper.Interfaces;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Celeste.Mod.YaoiHelper.Entities;
 
-[CustomEntity("YaoiHelper/ShaderMask")]
+[CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShaderMask)}")]
 [Tracked]
 public sealed class ShaderMask : Entity, IShaderMask {
 	private readonly List<string> groups;
+	private readonly MTexture image;
+
 	public List<string> MaskGroups => groups;
-	public MTexture image;
 
 	public ShaderMask(EntityData data, Vector2 offset) : base(data.Position + offset) {
 		groups = data.Attr("mask_groups").Split(',').Select(x => x.Trim()).ToList();

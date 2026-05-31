@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
@@ -9,7 +8,7 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity(["YaoiHelper/HDShader", "YaoiHelper/HDShaderTrigger"])]
+[CustomEntity(["YaoiHelper/HDShader", $"{nameof(YaoiHelper)}/{nameof(HDShaderTrigger)}"])]
 [Tracked]
 public sealed class HDShaderTrigger : Trigger {
 	public List<Shader> Shaders;
@@ -49,5 +48,4 @@ public sealed class HDShaderTrigger : Trigger {
 		base.OnLeave(player);
 		active = false || alwaysActive;
 	}
-	
 }

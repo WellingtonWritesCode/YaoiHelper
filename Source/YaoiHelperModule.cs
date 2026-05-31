@@ -1,42 +1,67 @@
-﻿using System;
-using Celeste.Mod.YaoiHelper.Entities;
-using Celeste.Mod.YaoiHelper.Handlers;
-using Celeste.Mod.YaoiHelper.Triggers;
-using Microsoft.Xna.Framework;
-using Monocle;
+﻿using MonoMod.ModInterop;
 using MonoMod.RuntimeDetour;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Celeste.Mod.YaoiHelper;
 
-public class YaoiHelperModule : EverestModule {
-    public static YaoiHelperModule Instance { get; private set; }
+public sealed class YaoiHelperModule : EverestModule {
+	public const string DefaultDetourID = "YaoiHelper";
 
-    public override Type SettingsType => typeof(YaoiHelperModuleSettings);
-    public static YaoiHelperModuleSettings Settings => (YaoiHelperModuleSettings) Instance._Settings;
+	public static YaoiHelperModule Instance { get; private set; }
 
-    public override Type SessionType => typeof(YaoiHelperModuleSession);
-    public static YaoiHelperModuleSession Session => (YaoiHelperModuleSession) Instance._Session;
+	public override Type SettingsType => typeof(YaoiHelperModuleSettings);
+	public static YaoiHelperModuleSettings Settings => (YaoiHelperModuleSettings) Instance._Settings;
 
-    public override Type SaveDataType => typeof(YaoiHelperModuleSaveData);
-    public static YaoiHelperModuleSaveData SaveData => (YaoiHelperModuleSaveData) Instance._SaveData;
+	public override Type SessionType => typeof(YaoiHelperModuleSession);
+	public static YaoiHelperModuleSession Session => (YaoiHelperModuleSession) Instance._Session;
 
-    public YaoiHelperModule() {
-        Instance = this;
+	public override Type SaveDataType => typeof(YaoiHelperModuleSaveData);
+	public static YaoiHelperModuleSaveData SaveData => (YaoiHelperModuleSaveData) Instance._SaveData;
+
+	public static readonly EverestModuleMetadata SRTModuleMetadata = new() {
+		Name = "SpeedrunTool",
+		Version = new Version(3, 16, 1),
+	};
+	public static bool SRTLoaded { get; private set; }
+
+	private static Dictionary<Type, SubmoduleAttribute> submodules;
+
+	public YaoiHelperModule() {
+		Instance = this;
 #if DEBUG
-        // debug builds use verbose logging
-        Logger.SetLogLevel(nameof(YaoiHelperModule), LogLevel.Verbose);
+		Logger.SetLogLevel(nameof(YaoiHelper), LogLevel.Verbose);
 #else
-        // release builds use info logging to reduce spam in log files
-        Logger.SetLogLevel(nameof(YaoiHelperModule), LogLevel.Info);
+		Logger.SetLogLevel(nameof(YaoiHelper), LogLevel.Info);
 #endif
-    }
+	}
 
-    public override void Load() {
-		HDShaderHandler.ApplyHooks();
-		DisableGlitchEffects.ApplyHooks();
-		GlobalTimerHandler.ApplyHooks();
-		BuildHandler.ApplyHooks();
-		PlayerOpacity.ApplyHooks();
+	public override void Load() {
+		SRTLoaded = Everest.Loader.DependencyLoaded(SRTModuleMetadata);
+
+		Dictionary<Type, BootstrapAttribute> bootstrap = getTypesWithAttr<BootstrapAttribute>(typeof(YaoiHelperModule).Assembly).ToDictionary(static t => t, static t => t.GetCustomAttribute<BootstrapAttribute>());
+		foreach ((Type t, BootstrapAttribute attr) in bootstrap.OrderBy(static kvp => kvp.Value.Order)) {
+			Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Load", $"calling bootstrap {t.Name} (Order = {attr.Order})");
+			invoke(t, "Init");
+		}
+
+		submodules = getTypesWithAttr<SubmoduleAttribute>(typeof(YaoiHelperModule).Assembly).ToDictionary(static t => t, static t => t.GetCustomAttribute<SubmoduleAttribute>());
+		using (new DetourConfigContext(new DetourConfig(
+			DefaultDetourID,
+			priority: 0
+		)).Use()) {
+			foreach ((Type t, SubmoduleAttribute attr) in submodules.OrderBy(static kvp => kvp.Value.Order)) {
+				Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Load", $"loading submodule {t.Name} (Order = {attr.Order})");
+				invoke(t, "ApplyHooks");
+				if (SRTLoaded && attr.HasSRTSupport) {
+					Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Load", $"loading SRT support for submodule {t.Name} (Order = {attr.Order})");
+					invoke(t, "RegisterSRTSupport");
+				}
+			}
+		}
+
 		// TODO add a toggle for this
 		// Everest.Events.Level.OnLoadLevel += static (Level level, Player.IntroTypes introType, bool fromLoader) => {
 		// 	level.Add(new HDShaderController(new EntityData(), new Vector2(0, 0)));
@@ -47,13 +72,35 @@ public class YaoiHelperModule : EverestModule {
 		// 	triggerData.Values.Add("always_active", true);
 		// 	level.Add(new HDShaderTrigger(triggerData, new Vector2(0, 0)));
 		// };
-    }
+	}
 
-    public override void Unload() {
-		HDShaderHandler.RemoveHooks();
-		DisableGlitchEffects.RemoveHooks();
-		GlobalTimerHandler.RemoveHooks();
-		BuildHandler.RemoveHooks();
-		PlayerOpacity.RemoveHooks();
-    }
+	public override void Unload() {
+		foreach ((Type t, SubmoduleAttribute attr) in submodules.OrderByDescending(static kvp => kvp.Value.Order)) {
+			if (SRTLoaded && attr.HasSRTSupport) {
+				Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading SRT support for submodule {t.Name} (Order = {attr.Order})");
+				invoke(t, "UnregisterSRTSupport");
+			}
+			Logger.Log(LogLevel.Debug, $"{nameof(YaoiHelper)}/Unload", $"unloading submodule {t.Name} (Order = {attr.Order})");
+			invoke(t, "RemoveHooks");
+		}
+	}
+
+	private static Type[] getTypesWithAttr<T>(Assembly asm) where T : Attribute {
+		// enumerate upfront to hit ReflectionTypeLoadException if there is one
+		try {
+			return asm.GetTypes().Where(static t => t.IsDefined(typeof(T))).ToArray();
+		} catch (ReflectionTypeLoadException e) {
+			return e.Types.Where(static t => t is not null && t.IsDefined(typeof(T))).ToArray();
+		}
+	}
+
+	private static void invoke(Type t, string m) {
+		MethodInfo mi = t.GetMethod(m, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+			?? throw new MissingMethodException($"{t.Name} is missing {m}()");
+		try {
+			mi.Invoke(null, null);
+		} catch (TargetParameterCountException) {
+			throw new MissingMethodException($"{t.Name} must have {m}() take in no arguments");
+		}
+	}
 }
