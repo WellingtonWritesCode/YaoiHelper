@@ -10,6 +10,10 @@ triggers.YaoiHelper/HDShader.attributes.description.always_active=Whether the sh
 
 triggers.YaoiHelper/MouseMovement.placements.name.main=Mouse Control
 triggers.YaoiHelper/MouseMovement.placements.description.main=When inside the trigger, teleports Madeline to your mouse every frame.
+triggers.YaoiHelper/WindowDance.attributes.description.fling=Whether to fling Madeline when letting go of her. Currently kinda broken
+triggers.YaoiHelper/WindowDance.attributes.description.allow_dashing=Whether to disable the teleporting while dashing.
+triggers.YaoiHelper/WindowDance.attributes.description.click_and_drag=If enabled, you must put your mouse above Madeline and click to drag her around.
+triggers.YaoiHelper/WindowDance.attributes.description.draw_cursor=If enabled, draws a little circle to indicate where your mouse is.
 
 triggers.YaoiHelper/WindowDance.placements.name.main=Window Dance
 triggers.YaoiHelper/WindowDance.placements.description.main=Makes the game window move around to follow Madeline.
