@@ -19,7 +19,7 @@ public static class HDShaderHandler {
 		VirtualContent.CreateRenderTarget("hd-shader-flip", 1920, 1080),
 		VirtualContent.CreateRenderTarget("hd-shader-flop", 1920, 1080),
 	};
-			
+	
 	internal static void ApplyHooks() {
 		IL.Celeste.Level.Render += IL_LevelRender_ApplyShader;
 	}
@@ -87,7 +87,23 @@ public static class HDShaderHandler {
 		Draw.SpriteBatch.End();
 	}
 
-	private static Effect passShaderParams(Shader shader, Level level, RenderTarget2D target) {
+	private static void loadTextures(Shader shader, HDShaderController controller) {
+		for (int i = 0; i < shader.Textures.Length; i++) {
+			if (string.IsNullOrEmpty(shader.Textures[i])) continue;
+
+			int slot = int.Parse(shader.Textures[i].Split(':')[0].TrimEnd());
+			string value = shader.Textures[i].Split(':')[1].TrimStart();
+
+			Engine.Graphics.GraphicsDevice.Textures[slot] = value.ToCharArray()[0] switch {
+				'%' => controller.GetMaskGroupTarget(value[1..]) ?? throw new KeyNotFoundException("mask group specified in HD shader not found"),
+				'/' => GFX.Game.GetOrDefault(value[1..], null)?.Texture.Texture_Safe ?? throw new KeyNotFoundException("texture specified in HD shader not found"),
+				'$' => (VirtualRenderTarget?)typeof(GameplayBuffers).GetField(value[1..])?.GetValue(null) ?? throw new KeyNotFoundException("GameplayBuffer specified in HD shader not found"),
+				_ => /* null ?? */ throw new KeyNotFoundException("invalid prefix - valid ones are '%' for mask groups, $ for GameplayBuffers and '/' for texture files"),
+			};
+		}
+	}
+
+	private static Effect passShaderParams(Shader shader, Level level, RenderTarget2D target, HDShaderController controller) {
 		Effect eff = shader.Effect;
 		eff.Parameters["Time"]?.SetValue(level.TimeActive);
 		eff.Parameters["CamPos"]?.SetValue(level.Camera.Position);
@@ -98,12 +114,8 @@ public static class HDShaderHandler {
 		eff.Parameters["ViewMatrix"]?.SetValue(target == null ? Matrix.CreateOrthographicOffCenter(0, 1920, 1080, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
 		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.Identity);
 
-		// TODO TODO TODO TODO TODO AUGHHAHGHAHHGHHAHGHAH
-		for (int i = 0; i < shader.MaskGroups.Length; i++) {
-			if (shader.MaskGroups[i] != "") {
-				Engine.Graphics.GraphicsDevice.Textures[i + 3] = level.Tracker.GetEntity<HDShaderController>().GetMaskGroupTarget(shader.MaskGroups[i]);
-			}
-		}
+		loadTextures(shader, controller);
+
 
 		return eff;
 	}
@@ -129,7 +141,7 @@ public static class HDShaderHandler {
 			Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 		}
 
-		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f) * (applyShaders ? Matrix.Identity : Engine.ScreenMatrix));
+		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, applyShaders ? null : ColorGrade.Effect, Matrix.CreateScale(6f) * (applyShaders ? Matrix.Identity : Engine.ScreenMatrix));
 		Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.Level, vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
 		Draw.SpriteBatch.End();
 
@@ -138,11 +150,16 @@ public static class HDShaderHandler {
 		List<IShaderMask> shaderMasks = level.Tracker.GetEntities<ShaderMask>().Cast<IShaderMask>().ToList();
 		List<string> maskGroups = shaderMasks.SelectMany(x => x.MaskGroups).ToList();
 
+		Texture[] colorgradeTextures = new Texture[2] {
+			Engine.Graphics.GraphicsDevice.Textures[1],
+			Engine.Graphics.GraphicsDevice.Textures[2]
+		};
+
 		foreach (string group in maskGroups) {
 			Engine.Graphics.GraphicsDevice.SetRenderTarget(controller.GetMaskGroupTarget(group));
 			Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
-			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f));
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.CreateScale(6f));
 
 			foreach (IShaderMask sm in shaderMasks.Where(x => x.MaskGroups.Contains(group))) {
 				sm.RenderMask();
@@ -170,13 +187,18 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.Viewport = Engine.Viewport;
 			}
 
+			if (target == origTarget) {
+				Engine.Graphics.GraphicsDevice.Textures[1] = colorgradeTextures[0];
+				Engine.Graphics.GraphicsDevice.Textures[2] = colorgradeTextures[1];
+			}
+
 			Draw.SpriteBatch.Begin(
 				SpriteSortMode.Deferred,
 				BlendState.AlphaBlend,
 				SamplerState.PointClamp,
 				DepthStencilState.Default,
 				RasterizerState.CullNone,
-				target == origTarget ? null : passShaderParams(shaders[i], level, target ?? throw new InvalidOperationException("expected nonnull target if it's not orig")),
+				target == origTarget ? ColorGrade.Effect : passShaderParams(shaders[i], level, target ?? throw new InvalidOperationException("expected nonnull target if it's not orig"), controller),
 				target == null ? Engine.ScreenMatrix : Matrix.Identity
 			);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, target == origTarget && SaveData.Instance.Assists.MirrorMode ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
