@@ -37,9 +37,8 @@ public static class HDShaderHandler {
 		);
 		cursor.Index -= 2;
 
+		// todo clean this up
 		cursor.MoveAfterLabels();
-		cursor.EmitLdarg0();
-		cursor.EmitDelegate(renderPlayerToTempA);
 
 		cursor.GotoNext(MoveType.Before, cursor => cursor.MatchLdloc2());
 		cursor.GotoPrev(MoveType.Before, cursor => cursor.MatchCall(typeof(Draw), "get_SpriteBatch"));
@@ -55,38 +54,6 @@ public static class HDShaderHandler {
 		cursor.EmitDelegate(renderWithShaders);
 	}
 
-	private static void renderPlayerToTempA(Level level) {
-		if (level.Tracker.CountEntities<HDShaderController>() == 0) return;
-		if (!level.Tracker.GetEntity<HDShaderController>().RenderPlayerOver) return;
-
-		Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
-		Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
-		if (level.Tracker.CountEntities<Player>() > 0) {
-			foreach (Player player in level.Tracker.GetEntities<Player>().Cast<Player>()) {
-				if (player.Visible) {
-					player.Render();
-				}
-			}
-		} else {
-			foreach (PlayerDeadBody body in level.Entities.FindAll<PlayerDeadBody>()) {
-				if (body.Visible) {
-					body.Render();
-				}
-			}
-		}
-
-		if (Engine.Commands.Open) {
-			level.Entities.DebugRender(level.Camera);
-		}
-
-		// level.ParticlesFG.Render();
-		level.Particles.Render();
-		// level.ParticlesBG.Render();
-
-		Draw.SpriteBatch.End();
-	}
-
 	private static void loadTextures(Shader shader, HDShaderController controller) {
 		for (int i = 0; i < shader.Textures.Length; i++) {
 			if (string.IsNullOrEmpty(shader.Textures[i])) continue;
@@ -98,7 +65,8 @@ public static class HDShaderHandler {
 				'%' => controller.GetMaskGroupTarget(value[1..]) ?? throw new KeyNotFoundException("mask group specified in HD shader not found"),
 				'/' => GFX.Game.GetOrDefault(value[1..], null)?.Texture.Texture_Safe ?? throw new KeyNotFoundException("texture specified in HD shader not found"),
 				'$' => (VirtualRenderTarget?)typeof(GameplayBuffers).GetField(value[1..])?.GetValue(null) ?? throw new KeyNotFoundException("GameplayBuffer specified in HD shader not found"),
-				_ => /* null ?? */ throw new KeyNotFoundException("invalid prefix - valid ones are '%' for mask groups, $ for GameplayBuffers and '/' for texture files"),
+				'#' => SpecialBuffers.Get(value[1..]) ?? throw new KeyNotFoundException("special buffer specified in HD shader not found"),
+				_ => /* null ?? */ throw new KeyNotFoundException("invalid prefix - valid ones are '%' for mask groups, $ for GameplayBuffers, # for special buffers and '/' for texture files"),
 			};
 		}
 	}
@@ -108,10 +76,10 @@ public static class HDShaderHandler {
 		eff.Parameters["Time"]?.SetValue(level.TimeActive);
 		eff.Parameters["CamPos"]?.SetValue(level.Camera.Position);
 		eff.Parameters["PlayerPos"]?.SetValue(level.Tracker.CountEntities<Player>() == 1 ? level.Tracker.GetEntity<Player>().Position : new Vector2(-1, -1));
-		eff.Parameters["Dimensions"]?.SetValue(target == null ? new Vector2(Engine.Viewport.Width, Engine.Viewport.Height) : new Vector2(target.Width, target.Height));
+		eff.Parameters["Dimensions"]?.SetValue(new Vector2(target.Width, target.Height));
 
 		// Go my jank
-		eff.Parameters["ViewMatrix"]?.SetValue(target == null ? Matrix.CreateOrthographicOffCenter(0, 1920, 1080, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
+		eff.Parameters["ViewMatrix"]?.SetValue(Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
 		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.Identity);
 
 		loadTextures(shader, controller);
@@ -211,7 +179,8 @@ public static class HDShaderHandler {
 		if (controller.RenderLevelOver) {
 			Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.Gameplay, vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
 		} else {
-			Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.TempA, vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
+			Draw.SpriteBatch.Draw((RenderTarget2D)SpecialBuffers.Get("player"), vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
+			Draw.SpriteBatch.Draw((RenderTarget2D)SpecialBuffers.Get("particles"), vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
 		}
 		Draw.SpriteBatch.End();
 	}
