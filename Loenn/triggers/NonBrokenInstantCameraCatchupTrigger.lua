@@ -10,7 +10,7 @@ return {
 		data = {
 			flag = "",
 			flagInverted = false,
-			oneTime = true,
+			onlyOnEnter = true,
 		},
 	},
 	fieldInformation = {

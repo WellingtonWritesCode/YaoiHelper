@@ -12,20 +12,20 @@ internal sealed class NonBrokenInstantCameraCatchupTrigger : Trigger {
 
 	private readonly string flag;
 	private readonly bool flagInverted;
-	private readonly bool oneTime;
+	private readonly bool onlyOnEnter;
 
 	private bool camLockDirty = false;
 
 	public NonBrokenInstantCameraCatchupTrigger(EntityData data, Vector2 offset) : base(data, offset) {
 		flag = data.Attr("flag");
 		flagInverted = data.Bool("flagInverted");
-		oneTime = data.Bool("oneTime");
+		onlyOnEnter = data.Bool("onlyOnEnter");
 	}
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
 		if (string.IsNullOrEmpty(flag) || player.level.Session.GetFlag(flag) != flagInverted) {
-			VivHelperModule.Session.lockCamera = oneTime ? 1 : -1; // expire either after 1f or Never
+			VivHelperModule.Session.lockCamera = onlyOnEnter ? 1 : -1; // expire either after 1f or Never
 			camLockDirty = true;
 		}
 	}
