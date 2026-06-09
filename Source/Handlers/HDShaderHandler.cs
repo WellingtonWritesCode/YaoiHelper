@@ -77,7 +77,12 @@ public static class HDShaderHandler {
 		eff.Parameters["PlayerPos"]?.SetValue(level.Tracker.CountEntities<Player>() == 1 ? level.Tracker.GetEntity<Player>().Position : new Vector2(-1, -1));
 		eff.Parameters["Dimensions"]?.SetValue(new Vector2(target.Width, target.Height));
 
-		// Go my jank
+		// ausp shader compat
+		eff.Parameters["time"]?.SetValue(level.TimeActive + 2);
+		eff.Parameters["cpos"]?.SetValue(level.Camera.Position);
+		eff.Parameters["pscale"]?.SetValue(new Vector2(1f / target.Width, 1f / target.Height));
+
+		// from frosthelper
 		eff.Parameters["ViewMatrix"]?.SetValue(Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
 		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.Identity);
 
