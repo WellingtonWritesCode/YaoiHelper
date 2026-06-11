@@ -11,6 +11,7 @@ buildController.placements = {
 		allow_entity_mode = true;
 		unlimited = false;
 		tile_limit = 10,
+		flag = "";
 	}
 }
 

@@ -9,15 +9,10 @@ namespace Celeste.Mod.YaoiHelper.Entities;
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(HDShaderController)}")]
 [Tracked]
 public sealed class HDShaderController : Entity {
-	public readonly bool RenderPlayerOver;
-	public readonly bool RenderLevelOver;
-
 	private readonly List<VirtualRenderTarget> maskGroups = new();
 
 	public HDShaderController(EntityData data, Vector2 offset) : base(data.Position + offset) {
 		Visible = false;
-		RenderPlayerOver = data.Bool("render_player_over");
-		RenderLevelOver = data.Bool("render_level_over");
 	}
 
 	public override void Awake(Scene scene) {

@@ -22,6 +22,7 @@ public static class BuildHandler {
 	public static Vector2 MousePos { get; private set; }
 	private static float modeSwitchDoubleTapTimer = 0f;
 	public static bool AllowEntityMode { get; set; }
+	public static bool FlagSet { get; set; } = true;
 
 	public static bool BuildRoom(string level) => tileModifications.ContainsKey(level) || Mode == BuildMode.Entities;
 
@@ -90,7 +91,7 @@ public static class BuildHandler {
 	internal static void On_LevelUpdate_Build(On.Celeste.Level.orig_Update orig, Level level) {
         orig(level);
 
-        if (level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere)) return;
+        if (level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere) || (level.Tracker.CountEntities<BuildController>() > 0 && !FlagSet)) return;
 
 		// TODO don't hardcode the key
 		if (MInput.Keyboard.Pressed(Keys.LeftControl)) {

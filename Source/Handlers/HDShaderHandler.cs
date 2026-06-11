@@ -14,10 +14,12 @@ namespace Celeste.Mod.YaoiHelper.Handlers;
 
 [Submodule]
 public static class HDShaderHandler {
-	private static readonly List<VirtualRenderTarget> flipflop_targets = new(2) { 
+	private static readonly VirtualRenderTarget[] flipflop_targets = { 
 		VirtualContent.CreateRenderTarget("hd-shader-flip", 1920, 1080),
 		VirtualContent.CreateRenderTarget("hd-shader-flop", 1920, 1080),
 	};
+
+	private static readonly Dictionary<int, VirtualRenderTarget> rescale_targets = new Dictionary<int, VirtualRenderTarget>(16);
 	
 	internal static void ApplyHooks() {
 		IL.Celeste.Level.Render += IL_LevelRender_ApplyShader;
@@ -60,17 +62,35 @@ public static class HDShaderHandler {
 			int slot = int.Parse(shader.Textures[i].Split(':')[0].TrimEnd());
 			string value = shader.Textures[i].Split(':')[1].TrimStart();
 
-			Engine.Graphics.GraphicsDevice.Textures[slot] = value.ToCharArray()[0] switch {
+			// TODO cache some of this
+			Texture2D texture = value.ToCharArray()[0] switch {
 				'%' => controller.GetMaskGroupTarget(value[1..]) ?? throw new ArgumentException($"mask group {value[1..]} specified in HD shader not found"),
 				'/' => GFX.Game.GetOrDefault(value[1..], null)?.Texture.Texture_Safe ?? throw new ArgumentException($"texture {value[1..]} specified in HD shader not found"),
 				'$' => (VirtualRenderTarget?)typeof(GameplayBuffers).GetField(value[1..])?.GetValue(null) ?? throw new ArgumentException($"GameplayBuffer {value[1..]} specified in HD shader not found"),
 				'#' => SpecialBuffers.Get(value[1..]) ?? throw new ArgumentException($"special buffer {value[1..]} specified in HD shader not found"),
 				_ => throw new ArgumentException($"invalid prefix '{value[0]}' - valid ones are '%' for mask groups, '$' for GameplayBuffers, '#' for special buffers and '/' for texture files"),
 			};
+
+			// TODO: figure out how to fix the blur issue using sampler settings instead of scaling every texture 
+			if (!rescale_targets.TryGetValue(slot, out VirtualRenderTarget? rescaled)) {
+                rescaled = VirtualContent.CreateRenderTarget($"hd-shader-rescale-{slot}", 1920, 1080);
+                rescale_targets[slot] = rescaled;
+			}
+
+			Engine.Graphics.GraphicsDevice.SetRenderTarget(rescaled);
+			Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+
+			Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.CreateScale(1920 / texture.Width, 1080 / texture.Height, 1));
+			Draw.SpriteBatch.Draw(texture, Vector2.Zero, texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+			Draw.SpriteBatch.End();
+
+			Engine.Graphics.GraphicsDevice.Textures[slot] = rescaled;
 		}
+
+
 	}
 
-	private static Effect passShaderParams(Shader shader, Level level, RenderTarget2D target, HDShaderController controller) {
+	private static Effect passShaderParams(Shader shader, Level level, RenderTarget2D target, HDShaderController controller, RenderTarget2D origTarget) {
 		Effect eff = shader.Effect;
 		eff.Parameters["Time"]?.SetValue(level.TimeActive);
 		eff.Parameters["CamPos"]?.SetValue(level.Camera.Position);
@@ -83,11 +103,12 @@ public static class HDShaderHandler {
 		eff.Parameters["pscale"]?.SetValue(new Vector2(1f / target.Width, 1f / target.Height));
 
 		// from frosthelper
-		eff.Parameters["ViewMatrix"]?.SetValue(Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
-		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.Identity);
+		eff.Parameters["TransformMatrix"]?.SetValue(Matrix.CreateOrthographicOffCenter(0, target.Width, target.Height, 0, 0, 1));
+		eff.Parameters["ViewMatrix"]?.SetValue(Matrix.Identity);
 
 		loadTextures(shader, controller);
 
+		Engine.Graphics.GraphicsDevice.SetRenderTarget(origTarget);
 
 		return eff;
 	}
@@ -170,23 +191,12 @@ public static class HDShaderHandler {
 				SamplerState.PointClamp,
 				DepthStencilState.Default,
 				RasterizerState.CullNone,
-				target == origTarget ? ColorGrade.Effect : passShaderParams(shaders[i], level, target ?? throw new InvalidOperationException("expected nonnull target if it's not orig"), controller),
+				target == origTarget ? ColorGrade.Effect : passShaderParams(shaders[i], level, target ?? throw new InvalidOperationException("expected nonnull target if it's not orig"), controller, target),
 				target == null ? Engine.ScreenMatrix : Matrix.Identity
 			);
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, target == origTarget && SaveData.Instance.Assists.MirrorMode ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 		}
-
-		// render player over
-		if (!(controller.RenderPlayerOver || controller.RenderLevelOver)) return;
-		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.CreateScale(6f) * Engine.ScreenMatrix);
-		if (controller.RenderLevelOver) {
-			Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.Gameplay, vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
-		} else {
-			Draw.SpriteBatch.Draw((RenderTarget2D)SpecialBuffers.Get("player"), vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
-			Draw.SpriteBatch.Draw((RenderTarget2D)SpecialBuffers.Get("particles"), vector3 + vector4, GameplayBuffers.Level.Bounds, Color.White, 0f, vector3, scale, SpriteEffects.None, 0f);
-		}
-		Draw.SpriteBatch.End();
 	}
 }
 
