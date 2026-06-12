@@ -15,6 +15,7 @@ public sealed class HDShaderTrigger : Trigger {
 	private bool active;
 	private readonly bool alwaysActive;
 	private readonly string flagName;
+	private readonly int priority;
 
 	public bool Activated(Level level) {
 		return active && flag(level);
@@ -28,10 +29,11 @@ public sealed class HDShaderTrigger : Trigger {
 	}
 
 	public HDShaderTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-		string[] Textures = data.Attr("textures").Split(',').Select(x => x.Trim()).ToArray();
-		Shaders = data.Attr("effects").Split(',').Select(x => new Shader(new Effect(Engine.Graphics.GraphicsDevice, Everest.Content.Get($"Effects/{x.Trim()}.cso", true).Data), Textures)).ToList();
+		string[] textures = data.Attr("textures").Split(',').Select(x => x.Trim()).ToArray();
+		priority = data.Int("priority");
 		flagName = data.Attr("flag");
 		alwaysActive = data.Bool("always_active");
+		Shaders = data.Attr("effects").Split(',').Select(x => new Shader(new Effect(Engine.Graphics.GraphicsDevice, Everest.Content.Get($"Effects/{x.Trim()}.cso", true).Data), textures, priority)).ToList();
 	}
 
 	public override void Awake(Scene scene) {

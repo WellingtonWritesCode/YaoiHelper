@@ -7,7 +7,14 @@ HDShaderTrigger.placements = {
 		effects = "",
 		textures = "",
 		flag = "",
-		always_active=false
+		always_active=false,
+		priority = 0
+	}
+}
+
+HDShaderTrigger.fieldInformation = {
+	priority = {
+		fieldType = "integer"
 	}
 }
 

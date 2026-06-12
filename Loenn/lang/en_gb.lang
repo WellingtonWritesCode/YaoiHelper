@@ -6,6 +6,7 @@ triggers.YaoiHelper/HDShader.placements.description.main=Applies a high-resoluti
 triggers.YaoiHelper/HDShader.attributes.description.effects=A comma-seperated list of shaders this trigger should load, relative to Effects and sans file extension.\nIf your shader is in `Effects/mymodname/myshader.cso`, put `mymodname/myshader` here.
 triggers.YaoiHelper/HDShader.attributes.description.textures=A list of textures to pass to your shader. Format is <textureslot>:<prefix><identifier>\nThe available prefixes are `%` for mask groups, `$` for GameplayBuffers, `#` for special buffers and `%` for files.\nThe identifier for mask groups is the name of the mask group as defined in the Shader Mask.\nThe identifier for files is the path to the file relative to Graphics/Atlases/Gameplay.
 triggers.YaoiHelper/HDShader.attributes.description.flag=If this is populated, the shader will only display when the flag is set.
+triggers.YaoiHelper/HDShader.attributes.description.priority=The priority of this trigger's shaders. Higher is later.
 triggers.YaoiHelper/HDShader.attributes.description.always_active=Whether the shader should always be active regardless of whether the player is inside it or not.
 
 triggers.YaoiHelper/MouseMovement.placements.name.main=Mouse Control
@@ -89,3 +90,6 @@ entities.YaoiHelper/ShaderMask.placements.description.main=here be dragons
 entities.YaoiHelper/BuildRegion.placements.name.main=Build Allowed Region
 entities.YaoiHelper/BuildRegion.placements.description.main=When placed, restricts building (using Build Controller or the Build Anywhere mod setting) to the area within it.
 entities.YaoiHelper/BuildRegion.attributes.description.prevent_building_when_inside=Whether or not the player should be barred from building anywhere when inside this entity.
+
+entities.YaoiHelper/EntityIDShaderMask.name.main=Entity ID Shader Mask
+entities.YaoiHelper/EntityIDShaderMask.description.main=Renders entities specified by their ID to a mask group.

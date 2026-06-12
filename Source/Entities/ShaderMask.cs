@@ -7,8 +7,8 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Entities;
 
-[CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShaderMask)}")]
 [Tracked]
+[CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShaderMask)}")]
 public sealed class ShaderMask : Entity, IShaderMask {
 	private readonly List<string> groups;
 	private readonly MTexture image;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.YaoiHelper.Interfaces;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -18,7 +19,7 @@ public sealed class HDShaderController : Entity {
 	public override void Awake(Scene scene) {
 		base.Awake(scene);
 		maskGroups.Clear();
-		foreach (string group in scene.Tracker.GetEntities<ShaderMask>().Cast<ShaderMask>().SelectMany(x => x.MaskGroups)) {
+		foreach (string group in scene.Tracker.Entities.Values.SelectMany(x => x).Where(x => typeof(IShaderMask).IsAssignableFrom(x.GetType())).Cast<IShaderMask>().SelectMany(x => x.MaskGroups)) {
 			addMaskGroup(group);
 		}
 	}
