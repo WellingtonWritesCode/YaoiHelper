@@ -212,7 +212,7 @@ public static class HDShaderHandler {
 				Engine.Graphics.GraphicsDevice.SetRenderTarget(lastFrame);
 				Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
-				Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.Identity);
+				Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, ColorGrade.Effect, Matrix.Identity);
 				Draw.SpriteBatch.Draw(target, Vector2.Zero, target?.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 				Draw.SpriteBatch.End();
 			}
