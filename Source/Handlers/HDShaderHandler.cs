@@ -1,3 +1,4 @@
+// TODO: this needs a solid dusting
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -449,21 +450,21 @@ public static class SpecialBuffers {
 		//
 		// Draw.SpriteBatch.End();
 		//
-		// Engine.Graphics.GraphicsDevice.SetRenderTarget(Get("fgtiles"));
-		// Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-		// Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
-		//
-		// level.SolidTiles.Render();
-		//
-		// Draw.SpriteBatch.End();
-		//
-		// Engine.Graphics.GraphicsDevice.SetRenderTarget(Get("bgtiles"));
-		// Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-		// Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
-		//
-		// level.BgTiles.Render();
-		//
-		// Draw.SpriteBatch.End();
+		Engine.Graphics.GraphicsDevice.SetRenderTarget(Get("fgtiles"));
+		Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
+
+		level.SolidTiles.Render();
+
+		Draw.SpriteBatch.End();
+
+		Engine.Graphics.GraphicsDevice.SetRenderTarget(Get("bgtiles"));
+		Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+		Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
+
+		level.BgTiles.Render();
+
+		Draw.SpriteBatch.End();
 		//
 		// Engine.Graphics.GraphicsDevice.SetRenderTarget(Get("fgstylegrounds"));
 		// Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
@@ -493,8 +494,8 @@ public static class SpecialBuffers {
 		// Create("entities", 320, 180);
 		// Create("fgstylegrounds", 320, 180);
 		// Create("bgstylegrounds", 320, 180);
-		// Create("fgtiles", 320, 180);
-		// Create("bgtiles", 320, 180);
+		Create("fgtiles", 320, 180);
+		Create("bgtiles", 320, 180);
 		Create("light_no_blur", 320, 180);
 		Create("last_frame", 1920, 1080);
 	}

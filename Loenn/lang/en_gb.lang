@@ -88,3 +88,8 @@ entities.YaoiHelper/BuildRegion.attributes.description.prevent_building_when_ins
 
 entities.YaoiHelper/EntityIDShaderMask.placements.name.main=Entity ID Shader Mask
 entities.YaoiHelper/EntityIDShaderMask.placements.description.main=Renders entities specified by their ID to a mask group.
+entities.YaoiHelper/EntityIDShaderMask.attributes.description.entity_ids=A comma-separated list of entity IDs to render to the mask group.
+
+entities.YaoiHelper/EntityTypeShaderMask.placements.name.main=Entity Type Shader Mask
+entities.YaoiHelper/EntityTypeShaderMask.placements.description.main=Renders entities specified by their type (SID) to a mask group.
+entities.YaoiHelper/EntityTypeShaderMask.attributes.description.entity_sids=A comma-separated list of entity SIDs to render to the mask group.
