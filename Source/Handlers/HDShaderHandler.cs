@@ -61,16 +61,8 @@ public static class HDShaderHandler {
 	internal static void On_LoadLevel_GenerateTexturePool(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
 		clearTexturePool();
 
-		List<string> textures = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => !string.IsNullOrEmpty(string.Concat(x.Shaders.SelectMany(x => x.Textures))) && x.SourceData.Level.Name == level.Session.Level).SelectMany(x => x.Shaders).SelectMany(x => x.Textures).SelectMany(x => x.Split(':')[1].TrimStart().Split('+')).Select(x => x.Trim()).Distinct().ToList();
-		foreach (string texIdentifierWithModifier in textures) {
-			char? modifier = texIdentifierWithModifier[0] switch {
-				'-' => '-',
-				'*' => '*',
-				'!' => '!',
-				_ => null
-			};
-
-			string textureIdentifier = modifier is null ? texIdentifierWithModifier : texIdentifierWithModifier[1..];
+		List<string> textures = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => !string.IsNullOrEmpty(string.Concat(x.Shaders.SelectMany(x => x.Textures))) && x.SourceData.Level.Name == level.Session.Level).SelectMany(x => x.Shaders).SelectMany(x => x.Textures).SelectMany(x => x.Split(':')[1].TrimStart().Split('+')).Select(x => x.Trim()).Select(x => "!*-".Contains(x[0]) ? x[1..] : x).Distinct().ToList();
+		foreach (string textureIdentifier in textures) {
             TextureType type = prefixToType(textureIdentifier[0]);
             texturePool[type].Add(textureIdentifier, VirtualContent.CreateRenderTarget($"hd-texture-pool-{textureIdentifier}", 1920, 1080));
 

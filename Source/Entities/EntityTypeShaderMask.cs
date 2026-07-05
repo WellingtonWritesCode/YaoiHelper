@@ -28,7 +28,7 @@ public sealed class EntityTypeShaderMask : Entity, IShaderMask {
 		base.Awake(scene);
 		if (scene is not Level level) return;
 		List<Type> types = sids.SelectMany(x => EntityRegistry.GetKnownTypesFromSid(x)).ToList();
-		entities = scene.Entities.Where(x => types.Contains(x.GetType())).ToList();
+		entities = scene.Entities.Where(x => types.Contains(x.GetType()) && x.SourceData.Level.Name == level.Session.Level).ToList();
     }
 
 	public void RenderMask() {
