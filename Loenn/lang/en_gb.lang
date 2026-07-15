@@ -1,3 +1,5 @@
+mods.YaoiHelper.name=Yaoi Helper
+
 triggers.YaoiHelper/MinimizeGame.placements.name.main=Minimize Game
 triggers.YaoiHelper/MinimizeGame.placements.description.main=Minimizes the game.
 

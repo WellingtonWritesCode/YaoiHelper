@@ -7,6 +7,7 @@ return {
 		data = {
 			mask_groups = "",
 			entity_ids = "",
+			respect_visibility = true,
 			low_res = true
 		},
 
