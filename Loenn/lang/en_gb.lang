@@ -1,7 +1,10 @@
 mods.YaoiHelper.name=Yaoi Helper
 
-triggers.YaoiHelper/MinimizeGame.placements.name.main=Minimize Game
-triggers.YaoiHelper/MinimizeGame.placements.description.main=Minimizes the game.
+triggers.YaoiHelper/MinimizeGameTrigger.placements.name.main=Minimize Game
+triggers.YaoiHelper/MinimizeGameTrigger.placements.description.main=Minimizes the game.
+
+triggers.YaoiHelper/ReloadLevelTrigger.placements.name.main=Reload Level
+triggers.YaoiHelper/ReloadLevelTrigger.placements.description.main=Hot reloads the level, as if pressing F5.
 
 triggers.YaoiHelper/HDShader.placements.name.main=HD Shader
 triggers.YaoiHelper/HDShader.placements.description.main=Applies a high-resolution (1920x1080) shader to the game.
@@ -98,3 +101,6 @@ entities.YaoiHelper/EntityTypeShaderMask.attributes.description.entity_sids=A co
 
 entities.YaoiHelper/VerticalCrumbleBlock.placements.name.main=Vertical Crumble Block
 entities.YaoiHelper/VerticalCrumbleBlock.placements.description.main=stretch
+
+entities.YaoiHelper/EntityInvisibilityField.placements.name.main=Entity Invisibility Field
+entities.YaoiHelper/EntityInvisibilityField.placements.description.main=Makes entities within itself invisible.

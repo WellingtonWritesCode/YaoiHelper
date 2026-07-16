@@ -16,7 +16,8 @@ public enum TextureType : byte {
 	MaskGroup,
 	Path,
 	SpecialBuffer,
-	GameplayBuffer
+	GameplayBuffer,
+	Register
 }
 
 [Submodule]
@@ -61,7 +62,8 @@ public static class HDShaderHandler {
 	internal static void On_LoadLevel_GenerateTexturePool(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
 		clearTexturePool();
 
-		List<string> textures = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => !string.IsNullOrEmpty(string.Concat(x.Shaders.SelectMany(x => x.Textures))) && x.SourceData.Level.Name == level.Session.Level).SelectMany(x => x.Shaders).SelectMany(x => x.Textures).SelectMany(x => x.Split(':')[1].TrimStart().Split('+')).Select(x => x.Trim()).Select(x => "!*-".Contains(x[0]) ? x[1..] : x).Distinct().ToList();
+        IEnumerable<HDShaderTrigger> triggers = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.SourceData.Level.Name == level.Session.Level);
+        List<string> textures = triggers.Where(x => !string.IsNullOrEmpty(string.Concat(x.Shaders.SelectMany(x => x.Textures)))).SelectMany(x => x.Shaders).SelectMany(x => x.Textures).SelectMany(x => x.Split(':')[1].TrimStart().Split('+')).Select(x => x.Trim()).Select(x => "!*-".Contains(x[0]) ? x[1..] : x).Concat(triggers.SelectMany(x => x.Shaders).Where(x => !string.IsNullOrEmpty(x.Target)).Select(x => string.Concat('@', x.Target))).Distinct().ToList();
 		foreach (string textureIdentifier in textures) {
             TextureType type = prefixToType(textureIdentifier[0]);
             texturePool[type].Add(textureIdentifier, VirtualContent.CreateRenderTarget($"hd-texture-pool-{textureIdentifier}", 1920, 1080));
@@ -78,8 +80,6 @@ public static class HDShaderHandler {
 				Draw.SpriteBatch.End();
 			}
 		}
-
-
 	}
 
 	internal static void IL_LevelRender_ApplyShader(ILContext il) {
@@ -116,7 +116,8 @@ public static class HDShaderHandler {
 			'/'  => TextureType.Path,
 			'$'  => TextureType.GameplayBuffer,
 			'#'  => TextureType.SpecialBuffer,
-			_ => throw new ArgumentException($"invalid prefix {pfx} - valid ones are '%' "),
+			'@'  => TextureType.Register,
+			_ => throw new ArgumentException($"invalid prefix {pfx} - valid ones are '%' for mask groups, $ for GameplayBuffers, # for special buffers, / for paths and @ for registers"),
 		};
 	}
 
@@ -171,8 +172,6 @@ public static class HDShaderHandler {
 
 			Engine.Graphics.GraphicsDevice.Textures[slot] = concatTarget;
 		}
-
-
 	}
 
 	private static Effect passShaderParams(Shader shader, Level level, RenderTarget2D target, RenderTarget2D origTarget) {
@@ -290,11 +289,12 @@ public static class HDShaderHandler {
 		RenderTarget2D? target;
 
 		// TODO: this wastes a draw call
-		for (int i = 0; i <= shaders.Count; i++) {
-			source = flipflop_targets[i % 2];
+		for (int i = 0, flopulation = 0; i <= shaders.Count; i++) {
+			source = flipflop_targets[flopulation % 2];
 			target = i switch {
-				_ when i == shaders.Count => origTarget,
-				_ => (RenderTarget2D)flipflop_targets[1 - (i % 2)],
+				_ when shaders.ElementAtOrDefault(i)?.Target is not null => (RenderTarget2D)texturePool[TextureType.Register][string.Concat('@', shaders[i].Target)],
+				_ when flopulation == shaders.Count(x => x.Target is null) => origTarget,
+				_ => (RenderTarget2D)flipflop_targets[1 - (flopulation % 2)],
 			};
 
 			Engine.Graphics.GraphicsDevice.SetRenderTarget(target);
@@ -322,7 +322,11 @@ public static class HDShaderHandler {
 			Draw.SpriteBatch.Draw(source, Vector2.Zero, source.Bounds, Color.White, 0f, Vector2.Zero, 1f, target == origTarget && SaveData.Instance.Assists.MirrorMode ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 			Draw.SpriteBatch.End();
 
-			if (i == shaders.Count - 1 && SpecialBuffers.Get("last_frame") is VirtualRenderTarget lastFrame) {
+			if (shaders.ElementAtOrDefault(i)?.Target is null) {
+				flopulation++;
+			}
+
+			if (flopulation == shaders.Count(x => x.Target is null) - 1 && SpecialBuffers.Get("last_frame") is VirtualRenderTarget lastFrame) {
 				Engine.Graphics.GraphicsDevice.SetRenderTarget(lastFrame);
 				Engine.Graphics.GraphicsDevice.Clear(Color.Black);
 
