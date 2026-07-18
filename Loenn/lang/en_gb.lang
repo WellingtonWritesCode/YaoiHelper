@@ -1,11 +1,14 @@
+mods.YaoiHelper.name=Yaoi Helper
+
 triggers.YaoiHelper/MinimizeGame.placements.name.main=Minimize Game
 triggers.YaoiHelper/MinimizeGame.placements.description.main=Minimizes the game.
 
 triggers.YaoiHelper/HDShader.placements.name.main=HD Shader
-triggers.YaoiHelper/HDShader.placements.description.main=Applies a high-resolution (1920x1080) shader to the game.\nRequires a HD Shader Controller to function.
+triggers.YaoiHelper/HDShader.placements.description.main=Applies a high-resolution (1920x1080) shader to the game.
 triggers.YaoiHelper/HDShader.attributes.description.effects=A comma-seperated list of shaders this trigger should load, relative to Effects and sans file extension.\nIf your shader is in `Effects/mymodname/myshader.cso`, put `mymodname/myshader` here.
 triggers.YaoiHelper/HDShader.attributes.description.textures=A list of textures to pass to your shader. Format is <textureslot>:<prefix><identifier>\nThe available prefixes are `%` for mask groups, `$` for GameplayBuffers, `#` for special buffers and `%` for files.\nThe identifier for mask groups is the name of the mask group as defined in the Shader Mask.\nThe identifier for files is the path to the file relative to Graphics/Atlases/Gameplay.
 triggers.YaoiHelper/HDShader.attributes.description.flag=If this is populated, the shader will only display when the flag is set.
+triggers.YaoiHelper/HDShader.attributes.description.priority=The priority of this trigger's shaders. Higher is later.
 triggers.YaoiHelper/HDShader.attributes.description.always_active=Whether the shader should always be active regardless of whether the player is inside it or not.
 
 triggers.YaoiHelper/MouseMovement.placements.name.main=Mouse Control
@@ -73,11 +76,6 @@ triggers.YaoiHelper/SpeedFadeTrigger.attributes.description.lower_bound=Speed va
 triggers.YaoiHelper/SpeedFadeTrigger.attributes.description.upper_bound=Speed values above this get clamped to 100%.
 
 
-entities.YaoiHelper/HDShaderController.placements.name.main=HD Shader Controller
-entities.YaoiHelper/HDShaderController.placements.description.main=Adjusts the behavior of HD Shader triggers.\nRequired for said triggers to function.
-entities.YaoiHelper/HDShaderController.attributes.description.render_player_over=If enabled, renders the player over the active shaders (and also some other things, such as darkness alpha)
-entities.YaoiHelper/HDShaderController.attributes.description.render_level_over=If enabled, renders the level over the active shaders, although without stylegrounds.
-
 entities.YaoiHelper/BuildController.placements.name.main=Build Controller
 entities.YaoiHelper/BuildController.placements.description.main=Allows the player to build and mine tiles.
 entities.YaoiHelper/BuildController.attributes.description.unlimited=Whether the amount of tiles should be unlimited or not.
@@ -89,3 +87,14 @@ entities.YaoiHelper/ShaderMask.placements.description.main=here be dragons
 entities.YaoiHelper/BuildRegion.placements.name.main=Build Allowed Region
 entities.YaoiHelper/BuildRegion.placements.description.main=When placed, restricts building (using Build Controller or the Build Anywhere mod setting) to the area within it.
 entities.YaoiHelper/BuildRegion.attributes.description.prevent_building_when_inside=Whether or not the player should be barred from building anywhere when inside this entity.
+
+entities.YaoiHelper/EntityIDShaderMask.placements.name.main=Entity ID Shader Mask
+entities.YaoiHelper/EntityIDShaderMask.placements.description.main=Renders entities specified by their ID to a mask group.
+entities.YaoiHelper/EntityIDShaderMask.attributes.description.entity_ids=A comma-separated list of entity IDs to render to the mask group.
+
+entities.YaoiHelper/EntityTypeShaderMask.placements.name.main=Entity Type Shader Mask
+entities.YaoiHelper/EntityTypeShaderMask.placements.description.main=Renders entities specified by their type (SID) to a mask group.
+entities.YaoiHelper/EntityTypeShaderMask.attributes.description.entity_sids=A comma-separated list of entity SIDs to render to the mask group.
+
+entities.YaoiHelper/VerticalCrumbleBlock.placements.name.main=Vertical Crumble Block
+entities.YaoiHelper/VerticalCrumbleBlock.placements.description.main=stretch

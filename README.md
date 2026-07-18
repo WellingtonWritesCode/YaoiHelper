@@ -1,6 +1,5 @@
 # YaoiHelper
 TODO:
-- fix extvars zoom
-- add priority system for hd shader triggers
-- add better parsing for textures + operations (-, +, something that "polarizes" the mask)
+- add better parsing for operations (also something that "polarizes" the mask)
+- make the fling actually work
 - make mouse movement trigger work with window follow trigger
