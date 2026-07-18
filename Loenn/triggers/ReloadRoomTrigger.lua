@@ -1,5 +1,5 @@
 return {
-	name = "YaoiHelper/ReloadLevelTrigger",
+	name = "YaoiHelper/ReloadRoomTrigger",
 	placements = {
 		name = "main"
 	}

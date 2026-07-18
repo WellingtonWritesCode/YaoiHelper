@@ -5,9 +5,9 @@ using Monocle;
 
 namespace Celeste.Mod.YaoiHelper.Triggers;
 
-[CustomEntity($"{nameof(YaoiHelper)}/{nameof(ReloadLevelTrigger)}")]
-public sealed class ReloadLevelTrigger : Trigger {
-    public ReloadLevelTrigger(EntityData data, Vector2 offset) : base(data, offset) {
+[CustomEntity($"{nameof(YaoiHelper)}/{nameof(HotReloadRoomTrigger)}")]
+public sealed class HotReloadRoomTrigger : Trigger {
+    public HotReloadRoomTrigger(EntityData data, Vector2 offset) : base(data, offset) {
     }
 
     public override void Awake(Scene scene) {

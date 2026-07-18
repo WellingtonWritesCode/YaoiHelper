@@ -23,8 +23,8 @@ public enum TextureType : byte {
 [Submodule]
 public static class HDShaderHandler {
 	private static readonly VirtualRenderTarget[] flipflop_targets = { 
-		VirtualContent.CreateRenderTarget("hd-shader-flip", 1920, 1080),
-		VirtualContent.CreateRenderTarget("hd-shader-flop", 1920, 1080),
+		VirtualContent.CreateRenderTarget("yaoihelper-hd-shader-flip", 1920, 1080),
+		VirtualContent.CreateRenderTarget("yaoihelper-hd-shader-flop", 1920, 1080),
 	};
 
 	private static readonly Dictionary<string, Effect> utilShaders = new Dictionary<string, Effect>() {
@@ -35,7 +35,7 @@ public static class HDShaderHandler {
 
 	private static readonly Dictionary<int, VirtualRenderTarget> concatTargets = new Dictionary<int, VirtualRenderTarget>(16);
 
-	private static readonly VirtualRenderTarget tempLowRes = VirtualContent.CreateRenderTarget("hd-shader-temp-lowres", 320, 180);
+	private static readonly VirtualRenderTarget tempLowRes = VirtualContent.CreateRenderTarget("yaoihelper-hd-shader-temp-lowres", 320, 180);
 
 	internal static void ApplyHooks() {
 		Everest.Events.Level.OnLoadLevel += On_LoadLevel_GenerateTexturePool;
@@ -137,7 +137,7 @@ public static class HDShaderHandler {
 			}
 
 			if (!concatTargets.TryGetValue(slot, out VirtualRenderTarget? concatTarget)) {
-				concatTargets[slot] = concatTarget = VirtualContent.CreateRenderTarget($"hd-shader-rescale-{slot}", 1920, 1080);
+				concatTargets[slot] = concatTarget = VirtualContent.CreateRenderTarget($"yaoihelper-hd-shader-rescale-{slot}", 1920, 1080);
 			}
 
 			Engine.Graphics.GraphicsDevice.SetRenderTarget(concatTarget);
@@ -291,7 +291,7 @@ public static class HDShaderHandler {
 		// TODO: this wastes a draw call
 		for (int i = 0, flopulation = 0; i <= shaders.Count; i++) {
 			source = flipflop_targets[flopulation % 2];
-			target = i switch {
+			target = 0 switch {
 				_ when shaders.ElementAtOrDefault(i)?.Target is not null => (RenderTarget2D)texturePool[TextureType.Register][string.Concat('@', shaders[i].Target)],
 				_ when flopulation == shaders.Count(x => x.Target is null) => origTarget,
 				_ => (RenderTarget2D)flipflop_targets[1 - (flopulation % 2)],
@@ -479,7 +479,7 @@ public static class SpecialBuffers {
 	}
 
 	public static void Create(string name, int width, int height) {
-		targets.Add(name, VirtualContent.CreateRenderTarget($"hd-shader-special-target-{name}", width, height));
+		targets.Add(name, VirtualContent.CreateRenderTarget($"yaoihelper-hd-shader-special-target-{name}", width, height));
 	}	
 
 	public static void Init() {
