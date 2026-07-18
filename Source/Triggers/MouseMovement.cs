@@ -46,7 +46,8 @@ public sealed class MouseMovementTrigger : Trigger {
 
 		if (grabbed && !(player.StateMachine.State != 0 && allowDashing)) {
 			player.Position = mousePos - grabOffset;
-		} else if (fling) {
+		}
+		if (fling) {
 			player.Speed += (player.Position - last) * 10;
 		}
 	}
