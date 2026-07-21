@@ -17,7 +17,7 @@ DECLARE_TEXTURE(mask, 2);
 
 float4 SpritePixelShader(float2 uv : TEXCOORD0) : COLOR0
 {
-    return lerp(SAMPLE_TEXTURE(text1, uv), SAMPLE_TEXTURE(text2, uv), SAMPLE_TEXTURE(mask, uv).r);
+    return lerp(SAMPLE_TEXTURE(text1, uv), SAMPLE_TEXTURE(text2, uv), SAMPLE_TEXTURE(mask, uv));
 }
 
 void SpriteVertexShader(inout float4 color    : COLOR0,
