@@ -26,18 +26,18 @@ function verticalCrumbleBlock.sprite(room, entity)
 	local scaleY = height/8
 	local texture = "objects/crumbleBlock/default"
 
-	for i = 0, math.ceil(width/8)-1 do
-		local currWidth = math.min(width-8*i, 8)
+	for i = 0, math.ceil(width/32)-1 do
+		local currWidth = math.min(width-32*i, 32)
 		local spriteOptions = {
 			justification = {0,0},
-			x = x + 8*i,
+			x = x + 32*i,
 			y = y,
 			scaleY = scaleY,
 			width = currWidth,
 			height = height
 		}
 		local sprite = drawableSprite.fromTexture(texture, spriteOptions)
-		sprite:useRelativeQuad(i*8 % 32,0,currWidth,8,true,false)
+		sprite:useRelativeQuad(0,0,currWidth,8,true,false)
 		table.insert(sprites, sprite)
 	end
 
