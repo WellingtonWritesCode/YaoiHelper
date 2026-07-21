@@ -1,6 +1,9 @@
 return {
 	name = "YaoiHelper/ReloadRoomTrigger",
 	placements = {
-		name = "main"
+		name = "main",
+		data = {
+			flag = ""
+		}
 	}
 }

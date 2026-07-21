@@ -43,7 +43,7 @@ public sealed class EntityIDShaderMask : Entity, IShaderMask {
 		if (Scene is not Level level) return;
 		foreach (Entity? entity in entities) {
 			Vector2? oldPos = entity?.Position;
-			if (oldPos is Vector2 pos && entity is not null && (respectVisibility || entity.Visible)) {
+			if (oldPos is Vector2 pos && entity is not null && (!respectVisibility || entity.Visible)) {
 				entity.Position = Vector2.Transform(pos, level.Camera.Matrix);
 				entity.Render();
 				entity.Position = pos;

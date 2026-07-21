@@ -9,7 +9,7 @@ DECLARE_TEXTURE(text, 0);
 float4 Invert(float2 uv : TEXCOORD0) : COLOR0
 {
 	float4 color = SAMPLE_TEXTURE(text, uv);
-	return float4(1. - color.rgb, color.a);
+	return float4(1. - color);
 }
 
 float4 Polarize(float2 uv : TEXCOORD0) : COLOR0
@@ -24,7 +24,7 @@ float4 InvertPolarize(float2 uv : TEXCOORD0) : COLOR0
 	float4 color = SAMPLE_TEXTURE(text, uv);
 
 	float4 pcolor = float4(color.r > 0., color.g > 0., color.b > 0., color.a > 0.);
-	return float4(1. - pcolor.rgb, pcolor.a);
+	return float4(1. - pcolor);
 
 }
 
