@@ -1,13 +1,51 @@
-return {
-	name = "YaoiHelper/VerticalCrumbleBlock",
-	placements = {
-		name = "main",
-		data = {
-			width = 16,
-			height = 16,
-		}
-	},
+local drawableSprite = require("structs.drawable_sprite")
+local utils = require("utils")
 
-	-- TODO work out a proper texture for these at some point
-	color = {1, 1, 1, 0.2}
+local verticalCrumbleBlock = {}
+
+verticalCrumbleBlock.name = "YaoiHelper/VerticalCrumbleBlock"
+verticalCrumbleBlock.depth = 0
+verticalCrumbleBlock.fieldInformation = {
+    texture = {
+        options = textures,
+    }
 }
+verticalCrumbleBlock.placements = {
+	name = "main",
+	data = {
+		width = 8,
+		height = 8,
+	}
+}
+
+function verticalCrumbleBlock.sprite(room, entity)
+	local sprites = {}
+    local x, y = entity.x or 0, entity.y or 0
+    local width = math.max(entity.width or 0, 8)
+	local height = math.max(entity.height or 0, 8)
+	local scaleY = height/8
+	local texture = "objects/crumbleBlock/default"
+
+	for i = 0, math.ceil(width/32)-1 do
+		local currWidth = math.min(width-32*i, 32)
+		local spriteOptions = {
+			justification = {0,0},
+			x = x + 32*i,
+			y = y,
+			scaleY = scaleY,
+			width = currWidth,
+			height = height
+		}
+		local sprite = drawableSprite.fromTexture(texture, spriteOptions)
+		sprite:useRelativeQuad(0,0,currWidth,8,true,false)
+		table.insert(sprites, sprite)
+	end
+
+    return sprites
+end
+
+function verticalCrumbleBlock.selection(room, entity)
+    return utils.rectangle(entity.x or 0, entity.y or 0, math.max(entity.width or 0, 8), math.max(entity.height or 0, 8))
+end
+
+return verticalCrumbleBlock
