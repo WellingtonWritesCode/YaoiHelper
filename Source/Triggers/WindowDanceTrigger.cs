@@ -1,11 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
+using Celeste;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Utils.Imports;
+using Crackerberries.YaoiHelper.Utils.Imports;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity(["YaoiHelper/WindowDance", $"{nameof(YaoiHelper)}/{nameof(WindowDanceTrigger)}"])]
 public sealed partial class WindowDanceTrigger : Trigger {

@@ -1,11 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
+using Celeste;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Utils.Imports;
+using Crackerberries.YaoiHelper.Utils.Imports;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(MinimizeGameTrigger)}")]
 public sealed partial class MinimizeGameTrigger(EntityData data, Vector2 offset) : Trigger(data, offset) {

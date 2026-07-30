@@ -1,13 +1,15 @@
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Entities;
-using Celeste.Mod.YaoiHelper.Handlers;
+using Crackerberries.YaoiHelper.Entities;
+using Crackerberries.YaoiHelper.Handlers;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [Submodule]
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(ForceInputsTrigger)}")]

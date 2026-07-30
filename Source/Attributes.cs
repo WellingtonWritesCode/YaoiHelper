@@ -1,6 +1,6 @@
 using System;
 
-namespace Celeste.Mod.YaoiHelper;
+namespace Crackerberries.YaoiHelper;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 internal sealed class BootstrapAttribute : Attribute {

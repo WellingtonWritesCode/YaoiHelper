@@ -2,15 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Celeste.Mod.YaoiHelper.Interfaces;
-using Celeste.Mod.YaoiHelper.Triggers;
-using Celeste.Mod.YaoiHelper.Types;
+using Celeste;
+using Celeste.Mod;
+using Crackerberries.YaoiHelper.Interfaces;
+using Crackerberries.YaoiHelper.Triggers;
+using Crackerberries.YaoiHelper.Types;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Cil;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 public enum TextureType : byte {
 	MaskGroup,

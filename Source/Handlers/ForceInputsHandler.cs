@@ -1,3 +1,4 @@
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
@@ -5,7 +6,7 @@ using MonoMod.Utils;
 using System;
 using System.Reflection;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 public enum ForcedInputState : byte {
 	ForcePress,

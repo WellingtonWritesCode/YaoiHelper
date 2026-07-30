@@ -1,9 +1,11 @@
 using System.Linq;
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(HotReloadRoomTrigger)}")]
 public sealed class HotReloadRoomTrigger : Trigger {

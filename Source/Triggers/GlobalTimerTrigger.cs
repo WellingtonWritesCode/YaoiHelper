@@ -1,10 +1,11 @@
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Handlers;
+using Crackerberries.YaoiHelper.Handlers;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 // a bunch of this is lifted from frosthelper
 [CustomEntity(["YaoiHelper/GlobalTimer", $"{nameof(YaoiHelper)}/{nameof(GlobalTimerTrigger)}"])]

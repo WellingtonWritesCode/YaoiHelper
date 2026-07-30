@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Celeste.Mod.YaoiHelper.Utils.Imports;
+namespace Crackerberries.YaoiHelper.Utils.Imports;
 
 public static partial class SDLImports {
 #pragma warning disable CA1401 // P/Invokes should not be visible

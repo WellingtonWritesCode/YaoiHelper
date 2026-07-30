@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Interfaces;
+using Crackerberries.YaoiHelper.Interfaces;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Entities;
+namespace Crackerberries.YaoiHelper.Entities;
 
 [Tracked]
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShaderMask)}")]

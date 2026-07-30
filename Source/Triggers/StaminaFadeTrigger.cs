@@ -1,10 +1,11 @@
 // (voice that perfectly imitates berries's) a bunch of this is referenced from (goes back to my own voice) Speed Fade TRigger Dot Cs 
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(StaminaFadeTrigger)}")]
 [Tracked]

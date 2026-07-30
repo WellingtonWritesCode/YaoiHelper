@@ -1,10 +1,11 @@
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [Submodule]
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(DisableGlitchTrigger)}")]

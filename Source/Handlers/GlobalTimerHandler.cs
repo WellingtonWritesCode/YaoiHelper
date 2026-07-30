@@ -1,11 +1,12 @@
-using Celeste.Mod.YaoiHelper.Interop;
+using Crackerberries.YaoiHelper.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Celeste;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 [Submodule(HasSRTSupport = true)]
 public static class GlobalTimerHandler {

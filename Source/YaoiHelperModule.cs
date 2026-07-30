@@ -1,10 +1,11 @@
-﻿using MonoMod.RuntimeDetour;
+﻿using Celeste.Mod;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Celeste.Mod.YaoiHelper;
+namespace Crackerberries.YaoiHelper;
 
 public sealed class YaoiHelperModule : EverestModule {
 	public const string DefaultDetourID = "YaoiHelper";

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Celeste.Mod;
 using MonoMod.ModInterop;
 
-namespace Celeste.Mod.YaoiHelper.Interop;
+namespace Crackerberries.YaoiHelper.Interop;
 
 // bit yucky but we do what we gotta do
 [Bootstrap]

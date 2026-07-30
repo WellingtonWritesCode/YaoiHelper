@@ -1,9 +1,10 @@
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 // a bunch of this is referenced from crystalline
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(SpeedFadeTrigger)}")]

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 // stylemaskhelper is extensively referenced here
 [Submodule]

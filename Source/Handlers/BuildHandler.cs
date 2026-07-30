@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Celeste.Mod.YaoiHelper.Entities;
-using Celeste.Mod.YaoiHelper.Interop;
-using Celeste.Mod.YaoiHelper.Triggers;
+using Celeste;
+using Celeste.Mod;
+using Crackerberries.YaoiHelper.Entities;
+using Crackerberries.YaoiHelper.Interop;
+using Crackerberries.YaoiHelper.Triggers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using MonoMod.Utils;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 public enum BuildMode : byte {
 	Tiles,
@@ -68,7 +70,7 @@ public static class BuildHandler {
 	// entity stuff
 	
 	internal static void ApplyHooks() {
-		On.Celeste.Level.Update += on_LevelUpdate_Build;
+        On.Celeste.Level.Update += on_LevelUpdate_Build;
 		Everest.Events.LevelLoader.OnLoadingThread += onLoadingThread_AddCursorDisplayAndClearBuilds;
 		Everest.Events.Level.OnLoadLevel += onLoadLevel_ClearEntitySelection;
 	}

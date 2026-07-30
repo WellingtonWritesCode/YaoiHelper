@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Entities;
+namespace Crackerberries.YaoiHelper.Entities;
 
 // TODO: maybe use level.OnEndOfFrame after looking into potential perf implications
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(EntityInvisibilityField)}")]

@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>12.0</LangVersion>
-		<RootNamespace>Celeste.Mod.YaoiHelper.Analyzer</RootNamespace>
+		<RootNamespace>Crackerberries.YaoiHelper.Analyzer</RootNamespace>
 		<Nullable>enable</Nullable>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
