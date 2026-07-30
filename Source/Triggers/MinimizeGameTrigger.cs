@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Celeste.Mod.Entities;
+using Celeste.Mod.YaoiHelper.Utils.Imports;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -8,11 +9,8 @@ namespace Celeste.Mod.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(MinimizeGameTrigger)}")]
 public sealed partial class MinimizeGameTrigger(EntityData data, Vector2 offset) : Trigger(data, offset) {
-	[LibraryImport("SDL2")]
-	private static partial void SDL_MinimizeWindow(IntPtr window);
-
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
-		SDL_MinimizeWindow(Engine.Instance.Window.Handle);
+		SDLImports.SDL_MinimizeWindow(Engine.Instance.Window.Handle);
 	}
 }

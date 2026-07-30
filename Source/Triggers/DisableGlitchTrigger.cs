@@ -33,15 +33,15 @@ public sealed class DisableGlitchTrigger : Trigger {
 			$"{YaoiHelperModule.DefaultDetourID}_{nameof(DisableGlitchTrigger)}",
 			priority: int.MinValue // hook as late as possible as to not intervene with other people's stuff
 		)).Use()) {
-			On.Celeste.Glitch.Apply += On_GlitchApply_DisableIfTrigger;
+			On.Celeste.Glitch.Apply += on_GlitchApply_DisableIfTrigger;
 		}
 	}
 
 	internal static void RemoveHooks() {
-		On.Celeste.Glitch.Apply -= On_GlitchApply_DisableIfTrigger;
+		On.Celeste.Glitch.Apply -= on_GlitchApply_DisableIfTrigger;
 	}
 
-	internal static void On_GlitchApply_DisableIfTrigger(On.Celeste.Glitch.orig_Apply orig, VirtualRenderTarget target, float timer, float seed, float amplitude) {
+	private static void on_GlitchApply_DisableIfTrigger(On.Celeste.Glitch.orig_Apply orig, VirtualRenderTarget target, float timer, float seed, float amplitude) {
 		if (!Engine.Scene.Tracker.GetEntities<DisableGlitchTrigger>().Cast<DisableGlitchTrigger>().Any(x => x.Activated)) {
 			orig(target, timer, seed, amplitude);
 		}

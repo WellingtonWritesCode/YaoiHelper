@@ -11,7 +11,7 @@ namespace Celeste.Mod.YaoiHelper.Entities;
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShaderMask)}")]
 public sealed class ShaderMask : Entity, IShaderMask {
 	private readonly List<string> groups;
-	private readonly MTexture image;
+	private readonly MTexture? image;
 
 	public List<string> MaskGroups => groups;
 	public bool LowRes { get; set; }
@@ -42,7 +42,8 @@ public sealed class ShaderMask : Entity, IShaderMask {
 	}
 
 	private void renderHiRes() {
-		Vector2 position = Vector2.Transform(Collider.AbsolutePosition, SceneAs<Level>().Camera.Matrix);
+		if (Scene is not Level level) return;
+		Vector2 position = Vector2.Transform(Collider.AbsolutePosition, level.Camera.Matrix);
 
 		if (image == null) {
 			Draw.Rect(position, Collider.Width, Collider.Height, Color.White);

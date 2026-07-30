@@ -6,7 +6,9 @@ return {
 		name = "main",
 		data = {
 			lower_bound = 60,
-			upper_bound = 400
+			upper_bound = 400,
+			x_only = false,
+			y_only = false,
 		}
 	}
 }

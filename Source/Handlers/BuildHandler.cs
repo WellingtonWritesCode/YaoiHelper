@@ -68,15 +68,15 @@ public static class BuildHandler {
 	// entity stuff
 	
 	internal static void ApplyHooks() {
-		On.Celeste.Level.Update += On_LevelUpdate_Build;
-		Everest.Events.LevelLoader.OnLoadingThread += OnLoadingThread_AddCursorDisplayAndClearBuilds;
-		Everest.Events.Level.OnLoadLevel += OnLoadLevel_ClearEntitySelection;
+		On.Celeste.Level.Update += on_LevelUpdate_Build;
+		Everest.Events.LevelLoader.OnLoadingThread += onLoadingThread_AddCursorDisplayAndClearBuilds;
+		Everest.Events.Level.OnLoadLevel += onLoadLevel_ClearEntitySelection;
 	}
 
 	internal static void RemoveHooks() {
-		On.Celeste.Level.Update -= On_LevelUpdate_Build;
-		Everest.Events.LevelLoader.OnLoadingThread -= OnLoadingThread_AddCursorDisplayAndClearBuilds;
-		Everest.Events.Level.OnLoadLevel -= OnLoadLevel_ClearEntitySelection;
+		On.Celeste.Level.Update -= on_LevelUpdate_Build;
+		Everest.Events.LevelLoader.OnLoadingThread -= onLoadingThread_AddCursorDisplayAndClearBuilds;
+		Everest.Events.Level.OnLoadLevel -= onLoadLevel_ClearEntitySelection;
 	}
 	
 	internal static void RegisterSRTSupport() {
@@ -96,16 +96,16 @@ public static class BuildHandler {
 		tileModifications = [];
 	}
 
-	public static void OnLoadLevel_ClearEntitySelection(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
+	private static void onLoadLevel_ClearEntitySelection(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
 		Selection.Clear();
 	}
 
-	internal static void OnLoadingThread_AddCursorDisplayAndClearBuilds(Level level) {
+	private static void onLoadingThread_AddCursorDisplayAndClearBuilds(Level level) {
         ResetTileModifications();
 		level.Add(new BuildCursorDisplay());
 	}
 
-	internal static void On_LevelUpdate_Build(On.Celeste.Level.orig_Update orig, Level level) {
+	private static void on_LevelUpdate_Build(On.Celeste.Level.orig_Update orig, Level level) {
         orig(level);
 
         if (level.FrozenOrPaused || (level.Tracker.CountEntities<BuildController>() == 0 && !YaoiHelperModule.Settings.BuildAnywhere) || (level.Tracker.CountEntities<BuildController>() > 0 && !FlagSet)) return;

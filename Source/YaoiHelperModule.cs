@@ -63,17 +63,6 @@ public sealed class YaoiHelperModule : EverestModule {
 				}
 			}
 		}
-
-		// TODO add a toggle for this
-		// Everest.Events.Level.OnLoadLevel += static (Level level, Player.IntroTypes introType, bool fromLoader) => {
-		// 	level.Add(new HDShaderController(new EntityData(), new Vector2(0, 0)));
-		// 	EntityData triggerData = new EntityData {
-		// 		Values = []
-		// 	};
-		// 	triggerData.Values.Add("effects", "YaoiHelper/astigmatism");
-		// 	triggerData.Values.Add("always_active", true);
-		// 	level.Add(new HDShaderTrigger(triggerData, new Vector2(0, 0)));
-		// };
 	}
 
 	public override void Unload() {

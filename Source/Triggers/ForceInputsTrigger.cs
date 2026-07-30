@@ -40,14 +40,14 @@ internal sealed class ForceInputsTrigger : Trigger {
 	}
 
 	internal static void ApplyHooks() {
-		On.Celeste.Player.Update += On_PlayerUpdate_RunWithForced;
+		On.Celeste.Player.Update += on_PlayerUpdate_RunWithForced;
 	}
 
 	internal static void RemoveHooks() {
-		On.Celeste.Player.Update -= On_PlayerUpdate_RunWithForced;
+		On.Celeste.Player.Update -= on_PlayerUpdate_RunWithForced;
 	}
 
-	internal static void On_PlayerUpdate_RunWithForced(On.Celeste.Player.orig_Update orig, Player self) {
+	private static void on_PlayerUpdate_RunWithForced(On.Celeste.Player.orig_Update orig, Player self) {
 		ForceInputsTrigger? trigger = self.level.Tracker.GetEntities<ForceInputsTrigger>().OfType<ForceInputsTrigger>().FirstOrDefault(t => t.playerInside);
 		if (trigger is not null) {
 			ForceInputsHandler.WithForced(trigger.forcedSet, () => orig(self));

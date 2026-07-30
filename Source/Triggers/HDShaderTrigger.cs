@@ -45,11 +45,11 @@ public sealed class HDShaderTrigger : Trigger {
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
-		active = /* true && */flag(player.level);
+		active = flag(player.level);
 	}
 
 	public override void OnLeave(Player player) {
 		base.OnLeave(player);
-		active = /* false || */alwaysActive;
+		active = alwaysActive;
 	}
 }

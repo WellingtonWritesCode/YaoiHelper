@@ -38,13 +38,13 @@ public static class HDShaderHandler {
 	private static readonly VirtualRenderTarget tempLowRes = VirtualContent.CreateRenderTarget("yaoihelper-hd-shader-temp-lowres", 320, 180);
 
 	internal static void ApplyHooks() {
-		Everest.Events.Level.OnLoadLevel += On_LoadLevel_GenerateTexturePool;
-		IL.Celeste.Level.Render += IL_LevelRender_ApplyShader;
+		Everest.Events.Level.OnLoadLevel += on_LoadLevel_GenerateTexturePool;
+		IL.Celeste.Level.Render += il_LevelRender_ApplyShader;
 	}
 
 	internal static void RemoveHooks() {
-		Everest.Events.Level.OnLoadLevel -= On_LoadLevel_GenerateTexturePool;
-		IL.Celeste.Level.Render -= IL_LevelRender_ApplyShader;
+		Everest.Events.Level.OnLoadLevel -= on_LoadLevel_GenerateTexturePool;
+		IL.Celeste.Level.Render -= il_LevelRender_ApplyShader;
 	}
 
 	private static void clearTexturePool() {
@@ -59,7 +59,7 @@ public static class HDShaderHandler {
 		}
 	}
 
-	internal static void On_LoadLevel_GenerateTexturePool(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
+	private static void on_LoadLevel_GenerateTexturePool(Level level, Player.IntroTypes introTypes, bool isFromLoader) {
 		clearTexturePool();
 
         IEnumerable<HDShaderTrigger> triggers = level.Tracker.GetEntities<HDShaderTrigger>().Cast<HDShaderTrigger>().Where(x => x.SourceData.Level.Name == level.Session.Level);
@@ -82,28 +82,28 @@ public static class HDShaderHandler {
 		}
 	}
 
-	internal static void IL_LevelRender_ApplyShader(ILContext il) {
+	private static void il_LevelRender_ApplyShader(ILContext il) {
 		ILCursor cursor = new ILCursor(il);
 
 		cursor.GotoNext(MoveType.Before,
-			cursor => cursor.MatchLdnull(), 
-			cursor => cursor.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
+			i => i.MatchLdnull(), 
+			i => i.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
 		);
 		cursor.Index -= 2;
 
-		cursor.GotoNext(MoveType.After, cursor => cursor.MatchLdloc2());
+		cursor.GotoNext(MoveType.After, i => i.MatchLdloc2());
 		cursor.EmitLdarg0();
 		ILLabel dodgeSpriteBatchBegin = cursor.DefineLabel();
 		cursor.EmitBr(dodgeSpriteBatchBegin);
 
-		cursor.GotoNext(MoveType.After, cursor => cursor.MatchCall(typeof(Draw), "get_SpriteBatch"));
+		cursor.GotoNext(MoveType.After, i => i.MatchCall(typeof(Draw), "get_SpriteBatch"));
 		cursor.MarkLabel(dodgeSpriteBatchBegin);
 
-		cursor.GotoNext(MoveType.Before, cursor => cursor.MatchCallvirt<SpriteBatch>("Draw"));
+		cursor.GotoNext(MoveType.Before, i => i.MatchCallvirt<SpriteBatch>("Draw"));
 		ILLabel dodgeSpriteBatchDrawAndEnd = cursor.DefineLabel();
 		cursor.EmitBr(dodgeSpriteBatchDrawAndEnd);
 
-		cursor.GotoNext(MoveType.After, cursor => cursor.MatchCallvirt<SpriteBatch>("End"));
+		cursor.GotoNext(MoveType.After, i => i.MatchCallvirt<SpriteBatch>("End"));
 		cursor.MarkLabel(dodgeSpriteBatchDrawAndEnd);
 
 		cursor.MoveAfterLabels();
@@ -341,34 +341,35 @@ public static class HDShaderHandler {
 // TODO i have like no clue where to put this
 [Submodule]
 public static class SpecialBuffers {
+	// XXX: this shouldn't run unless the special buffers are in use
 	internal static void ApplyHooks() {
-		IL.Celeste.Level.Render += IL_LevelRender_RenderToSpecialBuffers;
-		IL.Celeste.LightingRenderer.BeforeRender += IL_LightingRendererBeforeRender_RenderWithoutBlur;
-		On.Celeste.Level.Begin += On_LevelBegin_InitSpecialBuffers;
-		On.Celeste.Level.End += On_LevelEnd_UnloadSpecialBuffers;
+		IL.Celeste.Level.Render += il_LevelRender_RenderToSpecialBuffers;
+		IL.Celeste.LightingRenderer.BeforeRender += il_LightingRendererBeforeRender_RenderWithoutBlur;
+		On.Celeste.Level.Begin += on_LevelBegin_InitSpecialBuffers;
+		On.Celeste.Level.End += on_LevelEnd_UnloadSpecialBuffers;
 	}
 
 	internal static void RemoveHooks() {
-		IL.Celeste.Level.Render -= IL_LevelRender_RenderToSpecialBuffers;
-		IL.Celeste.LightingRenderer.BeforeRender -= IL_LightingRendererBeforeRender_RenderWithoutBlur;
-		On.Celeste.Level.Begin -= On_LevelBegin_InitSpecialBuffers;
-		On.Celeste.Level.End -= On_LevelEnd_UnloadSpecialBuffers;
+		IL.Celeste.Level.Render -= il_LevelRender_RenderToSpecialBuffers;
+		IL.Celeste.LightingRenderer.BeforeRender -= il_LightingRendererBeforeRender_RenderWithoutBlur;
+		On.Celeste.Level.Begin -= on_LevelBegin_InitSpecialBuffers;
+		On.Celeste.Level.End -= on_LevelEnd_UnloadSpecialBuffers;
 	}
 
-	public static void On_LevelBegin_InitSpecialBuffers(On.Celeste.Level.orig_Begin orig, Level self) {
+	private static void on_LevelBegin_InitSpecialBuffers(On.Celeste.Level.orig_Begin orig, Level self) {
 		orig(self);
 		Init();
 	}
 
-	public static void On_LevelEnd_UnloadSpecialBuffers(On.Celeste.Level.orig_End orig, Level self) {
+	private static void on_LevelEnd_UnloadSpecialBuffers(On.Celeste.Level.orig_End orig, Level self) {
 		orig(self);
 		Unload();
 	}
 
-	internal static void IL_LightingRendererBeforeRender_RenderWithoutBlur(ILContext il) {
+	private static void il_LightingRendererBeforeRender_RenderWithoutBlur(ILContext il) {
 		ILCursor cursor = new ILCursor(il);
 
-		cursor.GotoNext(MoveType.Before, cursor => cursor.MatchCallOrCallvirt(typeof(GaussianBlur).GetMethod("Blur")!));
+		cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt(typeof(GaussianBlur).GetMethod("Blur")!));
 		cursor.EmitLdsfld(typeof(GameplayBuffers).GetField("Light")!);
 		cursor.EmitDelegate(renderLightWithoutBlur);
 	}
@@ -381,12 +382,12 @@ public static class SpecialBuffers {
 		Draw.SpriteBatch.End();
 	}
 
-	internal static void IL_LevelRender_RenderToSpecialBuffers(ILContext il) {
+	private static void il_LevelRender_RenderToSpecialBuffers(ILContext il) {
 		ILCursor cursor = new ILCursor(il);
 
 		cursor.GotoNext(MoveType.Before,
-			cursor => cursor.MatchLdnull(), 
-			cursor => cursor.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
+			i => i.MatchLdnull(), 
+			i => i.MatchCallvirt<GraphicsDevice>("SetRenderTarget")
 		);
 		cursor.Index -= 2;
 

@@ -17,11 +17,11 @@ public static class GlobalTimerHandler {
 	public static void AddCountdown(GlobalFlagCountdown c) => countdowns.Add(c);
 
 	internal static void ApplyHooks() {
-		On.Monocle.Engine.Update += On_EngineUpdate_TickCountdowns;
+		On.Monocle.Engine.Update += on_EngineUpdate_TickCountdowns;
 	}
 
 	internal static void RemoveHooks() {
-		On.Monocle.Engine.Update -= On_EngineUpdate_TickCountdowns;
+		On.Monocle.Engine.Update -= on_EngineUpdate_TickCountdowns;
 	}
 
 	internal static void RegisterSRTSupport() {
@@ -37,7 +37,7 @@ public static class GlobalTimerHandler {
 		}
 	}
 
-	internal static void On_EngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
+	private static void on_EngineUpdate_TickCountdowns(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
 		foreach (GlobalFlagCountdown countdown in countdowns) {
 			// TODO: this breaks with assist mode slowdown or seeker/heart-collect slowdowns or such
 			if (!paused(self.scene) || countdown.RunWhenPaused) {
