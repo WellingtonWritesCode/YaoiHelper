@@ -40,7 +40,7 @@ public sealed class SpeedFadeTrigger : Trigger {
 		if (self.Scene is not Level level) return orig(self, player, mode);
 		foreach (SpeedFadeTrigger speedFadeTrigger in level.Tracker.GetEntities<SpeedFadeTrigger>().Cast<SpeedFadeTrigger>()) {
 			if (speedFadeTrigger.Trigger == self) {
-				return float.Clamp((((speedFadeTrigger.XOnly | speedFadeTrigger.YOnly) ? (speedFadeTrigger.XOnly ? player.Speed.X : player.Speed.Y) : player.Speed.Length()) - speedFadeTrigger.LowerBound) / (speedFadeTrigger.UpperBound - speedFadeTrigger.LowerBound), 0f, 1f); 
+				return float.Clamp((((speedFadeTrigger.XOnly || speedFadeTrigger.YOnly) ? (speedFadeTrigger.XOnly ? player.Speed.X : player.Speed.Y) : player.Speed.Length()) - speedFadeTrigger.LowerBound) / (speedFadeTrigger.UpperBound - speedFadeTrigger.LowerBound), 0f, 1f); 
 			}
 		}	
 
