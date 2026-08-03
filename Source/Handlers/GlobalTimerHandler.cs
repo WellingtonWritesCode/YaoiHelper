@@ -61,7 +61,7 @@ public static class GlobalTimerHandler {
 	}
 
 	private static bool paused(Scene scene) {
-		if (SpeedrunTool.GetStateManagerState() == SpeedrunTool.StateManagerWaitingState)
+		if (YaoiHelperModule.SRTLoaded && SpeedrunTool.GetStateManagerState() == SpeedrunTool.StateManagerWaitingState)
 			return true;
 		return scene is Level { FrozenOrPaused: true } || scene.Paused;
 	}
