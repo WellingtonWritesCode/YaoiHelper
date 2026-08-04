@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Celeste.Mod.YaoiHelper.Analyzer;
+namespace Crackerberries.YaoiHelper.Analyzer;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class AttributeAnalyzer : DiagnosticAnalyzer {
@@ -52,10 +52,10 @@ public sealed class AttributeAnalyzer : DiagnosticAnalyzer {
 		INamedTypeSymbol type = (INamedTypeSymbol)ctx.Symbol;
 		if (type.TypeKind != TypeKind.Class)
 			return;
-		AttributeData? bootstrapAttr = getAttr(type, "Celeste.Mod.YaoiHelper.BootstrapAttribute");
+		AttributeData? bootstrapAttr = getAttr(type, "Crackerberries.YaoiHelper.BootstrapAttribute");
 		if (bootstrapAttr is not null)
 			checkRequiredMethod(ctx, type, "Init", MissingInitMethod);
-		AttributeData? submoduleAttr = getAttr(type, "Celeste.Mod.YaoiHelper.SubmoduleAttribute");
+		AttributeData? submoduleAttr = getAttr(type, "Crackerberries.YaoiHelper.SubmoduleAttribute");
 		if (submoduleAttr is not null) {
 			checkRequiredMethod(ctx, type, "ApplyHooks", MissingHooksMethod);
 			checkRequiredMethod(ctx, type, "RemoveHooks", MissingHooksMethod);

@@ -1,9 +1,10 @@
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using VivHelper;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(NonBrokenInstantCameraCatchupTrigger)}")]
 internal sealed class NonBrokenInstantCameraCatchupTrigger : Trigger {

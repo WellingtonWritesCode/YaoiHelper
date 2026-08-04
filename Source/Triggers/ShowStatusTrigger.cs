@@ -1,9 +1,11 @@
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Entities;
+using Crackerberries.YaoiHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(ShowStatusTrigger)}")]
 [Tracked]

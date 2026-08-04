@@ -1,10 +1,12 @@
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
+// TODO this is decomposing
 [CustomEntity(["YaoiHelper/MouseMovement", "YaoiHelper/MouselineTrigger", $"{nameof(YaoiHelper)}/{nameof(MouseMovementTrigger)}"])]
 public sealed class MouseMovementTrigger : Trigger {
 	private Vector2 mousePos;

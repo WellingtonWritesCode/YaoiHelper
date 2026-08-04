@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>YaoiHelper</AssemblyName>
-		<RootNamespace>Celeste.Mod.YaoiHelper</RootNamespace>
+		<RootNamespace>Crackerberries.YaoiHelper</RootNamespace>
 		<LangVersion>14.0</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>

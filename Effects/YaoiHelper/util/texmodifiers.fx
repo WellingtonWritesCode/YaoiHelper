@@ -16,14 +16,14 @@ float4 Polarize(float2 uv : TEXCOORD0) : COLOR0
 {
 	float4 color = SAMPLE_TEXTURE(text, uv);
 
-	return float4(color.r > 0., color.g > 0., color.b > 0., color.a > 0.);
+	return float4(any(color), any(color), any(color), any(color));
 }
 
 float4 InvertPolarize(float2 uv : TEXCOORD0) : COLOR0
 {
 	float4 color = SAMPLE_TEXTURE(text, uv);
 
-	float4 pcolor = float4(color.r > 0., color.g > 0., color.b > 0., color.a > 0.);
+	float4 pcolor = float4(any(color), any(color), any(color), any(color));
 	return float4(1. - pcolor);
 
 }

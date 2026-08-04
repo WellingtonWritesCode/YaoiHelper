@@ -3,11 +3,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Celeste;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Entities;
+namespace Crackerberries.YaoiHelper.Entities;
 
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(VerticalCrumbleBlock)}")]
 public class VerticalCrumbleBlock : Solid

@@ -80,6 +80,18 @@ triggers.YaoiHelper/SpeedFadeTrigger.placements.description.main=Fades the trigg
 triggers.YaoiHelper/SpeedFadeTrigger.attributes.description.lower_bound=Speed values below this get clamped to 0%.
 triggers.YaoiHelper/SpeedFadeTrigger.attributes.description.upper_bound=Speed values above this get clamped to 100%.
 
+triggers.YaoiHelper/StaminaFadeTrigger.placements.name.main=Stamina Fade Trigger
+triggers.YaoiHelper/StaminaFadeTrigger.placements.description.main=Fades the trigger under the node based on the stamina of the player.
+triggers.YaoiHelper/StaminaFadeTrigger.attributes.description.lower_bound=Stamina values below this get clamped to 0%.
+triggers.YaoiHelper/StaminaFadeTrigger.attributes.description.upper_bound=Stamina values above this get clamped to 100%.
+
+triggers.YaoiHelper/FlagSequence.placements.name.main=Flag Sequence
+triggers.YaoiHelper/FlagSequence.placements.description.main=Activates a list of flags in order with configurable delays. Can optionally advance during freeze frames.
+triggers.YaoiHelper/FlagSequence.attributes.description.flag_data=The data for the flag sequence.\nShould be in format <flaggroup>[;<flaggroup2>...], where flaggroup is <framecount>:<flag1>[,flag2...]\n- framecount: the number of frames before the flag activates\n- flags can be inverted with !\n- multiple entries can be entered with a newline or ; separator\nWill break if "Use total time" is enabled and the framecounts are in the wrong order.
+triggers.YaoiHelper/FlagSequence.attributes.description.use_delta_time=Whether to use Engine.DeltaTime for the timer (enabled) or to use an integer frame count instead (disabled). DeltaTime will properly slow down when the game is slowed, so you probably want that.\nStill use framecounts for the flag data even if this is enabled.
+triggers.YaoiHelper/FlagSequence.attributes.description.offset_freeze_frames=If enabled, the timers will account for freeze frames.
+triggers.YaoiHelper/FlagSequence.attributes.description.loop=Loops the sequence of flags.
+triggers.YaoiHelper/FlagSequence.attributes.description.use_total_time=Whether to use the total timer for framecounts (enabled) or to reset the timer after every flag activation (disabled).\n For example, you would write 20;40;60 for framecounts if this is enabled, and 20;20;20 if this is disabled.
 
 entities.YaoiHelper/BuildController.placements.name.main=Build Controller
 entities.YaoiHelper/BuildController.placements.description.main=Allows the player to build and mine tiles.

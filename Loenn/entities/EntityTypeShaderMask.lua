@@ -10,6 +10,5 @@ return {
 			respect_visibility = true,
 			low_res = true
 		},
-
 	},
 }

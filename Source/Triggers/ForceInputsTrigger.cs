@@ -1,13 +1,15 @@
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Entities;
-using Celeste.Mod.YaoiHelper.Handlers;
+using Crackerberries.YaoiHelper.Entities;
+using Crackerberries.YaoiHelper.Handlers;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [Submodule]
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(ForceInputsTrigger)}")]
@@ -40,14 +42,14 @@ internal sealed class ForceInputsTrigger : Trigger {
 	}
 
 	internal static void ApplyHooks() {
-		On.Celeste.Player.Update += On_PlayerUpdate_RunWithForced;
+		On.Celeste.Player.Update += on_PlayerUpdate_RunWithForced;
 	}
 
 	internal static void RemoveHooks() {
-		On.Celeste.Player.Update -= On_PlayerUpdate_RunWithForced;
+		On.Celeste.Player.Update -= on_PlayerUpdate_RunWithForced;
 	}
 
-	internal static void On_PlayerUpdate_RunWithForced(On.Celeste.Player.orig_Update orig, Player self) {
+	private static void on_PlayerUpdate_RunWithForced(On.Celeste.Player.orig_Update orig, Player self) {
 		ForceInputsTrigger? trigger = self.level.Tracker.GetEntities<ForceInputsTrigger>().OfType<ForceInputsTrigger>().FirstOrDefault(t => t.playerInside);
 		if (trigger is not null) {
 			ForceInputsHandler.WithForced(trigger.forcedSet, () => orig(self));

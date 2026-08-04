@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Entities;
+namespace Crackerberries.YaoiHelper.Entities;
 
+// TODO: maybe use level.OnEndOfFrame after looking into potential perf implications
 [CustomEntity($"{nameof(YaoiHelper)}/{nameof(EntityInvisibilityField)}")]
 [Tracked]
 [Submodule]
@@ -13,14 +16,14 @@ public sealed class EntityInvisibilityField : Entity {
 	public List<Entity> Entities = [];
 
 	internal static void ApplyHooks() {
-		Everest.Events.Level.OnAfterUpdate += OnAfterUpdate_MakeEntitiesInvisible;
+		Everest.Events.Level.OnAfterUpdate += onAfterUpdate_MakeEntitiesInvisible;
 	}
 
 	internal static void RemoveHooks() {
-		Everest.Events.Level.OnAfterUpdate -= OnAfterUpdate_MakeEntitiesInvisible;
+		Everest.Events.Level.OnAfterUpdate -= onAfterUpdate_MakeEntitiesInvisible;
 	}
 	
-	internal static void OnAfterUpdate_MakeEntitiesInvisible(Level level) {
+	private static void onAfterUpdate_MakeEntitiesInvisible(Level level) {
 		foreach (Entity entity in level.Tracker.GetEntities<EntityInvisibilityField>().Cast<EntityInvisibilityField>().SelectMany(x => x.Entities).Distinct()) {
 			entity.Visible = false;
 		}

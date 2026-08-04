@@ -1,10 +1,11 @@
 using System.Linq;
+using Celeste;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Handlers;
+using Crackerberries.YaoiHelper.Handlers;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 // a bunch of this is lifted from frosthelper
 [CustomEntity(["YaoiHelper/GlobalTimer", $"{nameof(YaoiHelper)}/{nameof(GlobalTimerTrigger)}"])]
@@ -27,6 +28,7 @@ public sealed class GlobalTimerTrigger(EntityData data, Vector2 offset) : Trigge
 	}
 
 	public override void DebugRender(Camera camera) {
+		// TODO: render in high res
 		base.DebugRender(camera);
 		ActiveFont.Draw(string.Join('\n', GlobalTimerHandler.Countdowns.Select(x => string.Concat(x.Flag, " : ", x.Current))), new Vector2(camera.Position.X, camera.Position.Y + camera.Viewport.Height / 2), Vector2.Zero, Vector2.One / 3, Color.Red);
 	}

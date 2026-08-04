@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
-using Celeste.Mod.YaoiHelper.Types;
+using Crackerberries.YaoiHelper.Types;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity(["YaoiHelper/HDShader", $"{nameof(YaoiHelper)}/{nameof(HDShaderTrigger)}"])]
 [Tracked]
@@ -45,11 +47,11 @@ public sealed class HDShaderTrigger : Trigger {
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
-		active = /* true && */flag(player.level);
+		active = flag(player.level);
 	}
 
 	public override void OnLeave(Player player) {
 		base.OnLeave(player);
-		active = /* false || */alwaysActive;
+		active = alwaysActive;
 	}
 }

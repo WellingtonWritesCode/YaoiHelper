@@ -1,8 +1,9 @@
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Text.RegularExpressions;
 
-namespace Celeste.Mod.YaoiHelper.Entities;
+namespace Crackerberries.YaoiHelper.Entities;
 
 internal sealed class StatusText : Entity {
 	public static readonly Vector2 Padding = new Vector2(25f, 12.5f);

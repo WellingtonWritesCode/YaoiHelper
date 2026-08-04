@@ -1,3 +1,4 @@
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
@@ -5,7 +6,7 @@ using MonoMod.Utils;
 using System;
 using System.Reflection;
 
-namespace Celeste.Mod.YaoiHelper.Handlers;
+namespace Crackerberries.YaoiHelper.Handlers;
 
 public enum ForcedInputState : byte {
 	ForcePress,
@@ -155,42 +156,42 @@ public static class ForceInputsHandler {
 	};
 
 	internal static void ApplyHooks() {
-		On.Celeste.Player.Die += On_PlayerDie_ResetState;
+		On.Celeste.Player.Die += on_PlayerDie_ResetState;
 
 		virtualButtonGetPressedHook = new Hook(
 			typeof(VirtualButton).GetProperty("Pressed", BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(VirtualButton), "get_Pressed"),
-			On_VirtualButtonGetCheckOrPressed_OverrideInput
+			on_VirtualButtonGetCheckOrPressed_OverrideInput
 		);
 		virtualButtonGetCheckHook = new Hook(
 			typeof(VirtualButton).GetProperty("Check", BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(VirtualButton), "get_Check"),
-			On_VirtualButtonGetCheckOrPressed_OverrideInput
+			on_VirtualButtonGetCheckOrPressed_OverrideInput
 		);
 		virtualButtonGetReleasedHook = new Hook(
 			typeof(VirtualButton).GetProperty("Released", BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(VirtualButton), "get_Released"),
-			On_VirtualButtonGetReleased_OverrideInput
+			on_VirtualButtonGetReleased_OverrideInput
 		);
 		inputGetDashPressedHook = new Hook(
 			typeof(Input).GetProperty("DashPressed", BindingFlags.Static | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(Input), "get_DashPressed"),
-			On_InputGetDashPressed_OverrideInput
+			on_InputGetDashPressed_OverrideInput
 		);
 		inputGetCrouchDashPressedHook = new Hook(
 			typeof(Input).GetProperty("CrouchDashPressed", BindingFlags.Static | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(Input), "get_CrouchDashPressed"),
-			On_InputGetCrouchDashPressed_OverrideInput
+			on_InputGetCrouchDashPressed_OverrideInput
 		);
 		inputGetGrabCheckHook = new Hook(
 			typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public)?.GetGetMethod() ??
 				throw new MissingMethodException(nameof(Input), "get_GrabCheck"),
-			On_InputGetGrabCheck_OverrideInput
+			on_InputGetGrabCheck_OverrideInput
 		);
 	}
 
 	internal static void RemoveHooks() {
-		On.Celeste.Player.Die -= On_PlayerDie_ResetState;
+		On.Celeste.Player.Die -= on_PlayerDie_ResetState;
 
 		virtualButtonGetPressedHook?.Dispose();
 		virtualButtonGetCheckHook?.Dispose();
@@ -207,7 +208,7 @@ public static class ForceInputsHandler {
 		inputGetGrabCheckHook = null;
 	}
 
-	internal static PlayerDeadBody On_PlayerDie_ResetState(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
+	private static PlayerDeadBody on_PlayerDie_ResetState(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
 		resetGlobal();
 		return orig(player, direction, evenIfInvincible, registerDeathInStats);
 	}
@@ -224,25 +225,25 @@ public static class ForceInputsHandler {
 		return null;
 	}
 
-	internal static bool On_VirtualButtonGetCheckOrPressed_OverrideInput(Func<VirtualButton, bool> orig, VirtualButton self) {
+	private static bool on_VirtualButtonGetCheckOrPressed_OverrideInput(Func<VirtualButton, bool> orig, VirtualButton self) {
 		bool? overrideInput = checkButtonOverride(self);
 		return hooksEnabled ? (overrideInput ?? orig(self)) : orig(self);
 	}
 
-	internal static bool On_VirtualButtonGetReleased_OverrideInput(Func<VirtualButton, bool> orig, VirtualButton self) {
+	private static bool on_VirtualButtonGetReleased_OverrideInput(Func<VirtualButton, bool> orig, VirtualButton self) {
 		bool? overrideInput = checkButtonOverride(self);
 		return hooksEnabled ? (overrideInput ?? orig(self)) : orig(self);
 	}
 
-	internal static bool On_InputGetDashPressed_OverrideInput(Func<bool> orig) {
+	private static bool on_InputGetDashPressed_OverrideInput(Func<bool> orig) {
 		return hooksEnabled ? (globalForcedX ?? orig()) : orig();
 	}
 
-	internal static bool On_InputGetCrouchDashPressed_OverrideInput(Func<bool> orig) {
+	private static bool on_InputGetCrouchDashPressed_OverrideInput(Func<bool> orig) {
 		return hooksEnabled ? (globalForcedZ ?? orig()) : orig();
 	}
 
-	internal static bool On_InputGetGrabCheck_OverrideInput(Func<bool> orig) {
+	private static bool on_InputGetGrabCheck_OverrideInput(Func<bool> orig) {
 		return hooksEnabled ? (globalForcedG ?? orig()) : orig();
 	}
 

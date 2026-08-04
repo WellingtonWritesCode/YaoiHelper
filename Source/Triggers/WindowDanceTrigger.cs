@@ -1,23 +1,22 @@
 using System;
 using System.Runtime.InteropServices;
+using Celeste;
 using Celeste.Mod.Entities;
+using Crackerberries.YaoiHelper.Utils.Imports;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.YaoiHelper.Triggers;
+namespace Crackerberries.YaoiHelper.Triggers;
 
 [CustomEntity(["YaoiHelper/WindowDance", $"{nameof(YaoiHelper)}/{nameof(WindowDanceTrigger)}"])]
 public sealed partial class WindowDanceTrigger : Trigger {
-	private static Vector2 bounds;
-	private static float zoom;
+	private Vector2 bounds;
+	private readonly float zoom;
 	private Vector2 windowSize => bounds / zoom;
 
 	public WindowDanceTrigger(EntityData data, Vector2 offset) : base(data, offset) {
 		zoom = data.Float("zoom_level", 6f);
 	}
-
-	[LibraryImport("SDL2")]
-	private static partial void SDL_SetWindowPosition(IntPtr window, int x, int y);
 
 	public override void OnEnter(Player player) {
 		base.OnEnter(player);
@@ -30,7 +29,7 @@ public sealed partial class WindowDanceTrigger : Trigger {
 		if (!player.Visible) return;
 
 		SceneAs<Level>().Camera.Position = player.Position + player.Collider.Size / 2;
-		SDL_SetWindowPosition(Engine.Instance.Window.Handle, (int)((player.Position.X - player.level.LevelOffset.X) * (bounds.X / 320f) - windowSize.X / 2), (int)((player.Position.Y - player.level.LevelOffset.Y) * (bounds.Y / 180f) - windowSize.Y / 2));
+		SDLImports.SDL_SetWindowPosition(Engine.Instance.Window.Handle, (int)((player.Position.X - player.level.LevelOffset.X) * (bounds.X / 320f) - windowSize.X / 2), (int)((player.Position.Y - player.level.LevelOffset.Y) * (bounds.Y / 180f) - windowSize.Y / 2));
 		SceneAs<Level>().Camera.CenterOrigin();
 	}
 

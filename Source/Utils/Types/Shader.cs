@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Celeste.Mod.YaoiHelper.Types;
+namespace Crackerberries.YaoiHelper.Types;
 
 public record Shader(Effect Effect, string[] Textures, string? Target, int Priority);
